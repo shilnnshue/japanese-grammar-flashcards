@@ -1,0 +1,6 @@
+# 排除工作区内存/临时文件
+.workbuddy/
+node_modules/
+*.tmp
+_test*
+_dom.html
