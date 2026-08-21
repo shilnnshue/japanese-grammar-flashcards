@@ -48,13 +48,15 @@
   .badge.id{background:#f3eede; color:#8a7d5e;}
   .center{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px;}
   .pattern{font-size:30px; font-weight:600; line-height:1.4; color:var(--ink);}
-  .meaning{font-size:26px; font-weight:600; color:var(--accent);}
+  .meaning{font-size:17px; font-weight:600; color:var(--accent); line-height:1.5;}
+  .word{font-size:38px; font-weight:700; line-height:1.3; color:var(--ink);}
   .conn{font-size:14px; color:var(--sub); background:#f7f2e6; border:1px dashed var(--line); border-radius:10px; padding:8px 12px; max-width:100%;}
   .hint{font-size:12px; color:#a99e88; text-align:center;}
   .foot{font-size:12px; color:var(--sub); margin-top:6px;}
   .example{margin-top:8px; padding:10px 12px; background:#f1f7f3; border:1px solid #d4e6db; border-radius:10px; max-width:100%; text-align:left;}
   .ex-label{font-size:11px; color:#7fae93; letter-spacing:2px; margin-bottom:3px;}
   .ex-jp{font-size:24px; color:var(--ink); font-weight:600; line-height:1.6;}
+  .ex-jp mark{background:#ffd76e; color:#5a3a00; border-radius:3px; padding:0 2px; font-weight:700;}
   .ex-cn{font-size:13px; color:var(--sub); margin-top:4px; line-height:1.5;}
   .ex-tag{display:inline-block; font-size:10px; color:#fff; background:#7fae93; border-radius:4px; padding:1px 5px; margin-left:6px; vertical-align:middle;}
   .nav{display:flex; gap:8px; align-items:center; justify-content:center; margin-bottom:12px; flex-wrap:wrap;}
@@ -76,7 +78,7 @@
 <div class="wrap">
   <header>
     <h1>📘 日语 1·2 级语法 368 句 · 闪卡</h1>
-    <p>正面记句型，翻面看释义，标记掌握情况即可自动复习。进度保存在本机浏览器。</p>
+    <p>正面例句记句型（语法词已高亮），翻面看单词与释义，标记掌握情况即可自动复习。</p>
   </header>
 
   <div class="stats">
@@ -125,11 +127,12 @@
       <div class="face back">
         <div class="badges" id="bBadges"></div>
         <div class="center">
+          <div class="word" id="bWord"></div>
           <div class="meaning" id="bMeaning"></div>
           <div class="conn" id="bConn"></div>
           <div class="foot" id="bPatternFoot"></div>
         </div>
-        <div class="hint">点击 <b>认识</b> 或 <b>不认识</b> 记录掌握情况</div>
+        <div class="hint">点击 <b>认识</b> 或 <b>不认识</b> 记录掌握情况 · <kbd>S</kbd> 朗读单词</div>
       </div>
     </div>
   </div>
@@ -160,6 +163,8 @@ let marks = loadMarks();
 const state = { idx:0, filtered:[], level:'all', category:'all', unit:'all', mode:'all', search:'' };
 let autoSpeak = false;
 let curPattern = '';
+let curWord = '';
+let flipped = false;
 
 const synth = window.speechSynthesis || null;
 let audioEl = null;
@@ -199,7 +204,7 @@ function playCloud(text){
     if(p && p.catch) p.catch(()=>speakLocal(text));
   }catch(e){ speakLocal(text); }
 }
-function speak(text){
+function speak(text, kind){
   if(!text) return;
   if(cloudMode){ playCloud(text); return; }
   speakLocal(text);
@@ -215,6 +220,67 @@ const cat = d => (d.category||'').trim() || '未分类';
 const unit = d => (d.unit||'').trim() || '未分类';
 const meaning = d => (d.meaning||'').trim() || '（暂无释义）';
 
+// 句型清洗：去掉（注释）、取第一个变体、去〜/＋名词等 → 得到"单词"本体
+function cleanPattern(p){
+  return String(p==null?'':p)
+    .replace(/[（(〔【].*?[）)〕】]/g,'')
+    .split(/[\/、／]/)[0]
+    .replace(/^[〜～~]/, '')
+    .replace(/＋.*$/, '')
+    .replace(/[…⋯]/g,'')
+    .trim();
+}
+// 单元显示名：如 "1目的•原因•理由" → "第1单元 · 目的•原因•理由"
+function unitLabel(u){
+  const n=parseInt(u,10);
+  if(isNaN(n)) return '第'+u+'单元';
+  const rest=String(u).replace(/^\d+/,'').replace(/^[·•]/, '');
+  return '第'+n+'单元' + (rest ? ' · '+rest : '');
+}
+// 例句中高亮语法词（返回安全 HTML；片假名归一化后最长优先匹配）
+function kataToHira(s){ return s.replace(/[\u30a1-\u30f6]/g, ch => String.fromCharCode(ch.charCodeAt(0)-0x60)); }
+function hlPattern(sentence, pattern){
+  sentence = String(sentence==null?'':sentence);
+  pattern = String(pattern==null?'':pattern);
+  if(!sentence || !pattern) return esc(sentence);
+  let norm='', map=[];
+  for(let i=0;i<sentence.length;i++){
+    const c=sentence[i];
+    if(c>='ァ' && c<='ヶ'){ norm += kataToHira(c); map.push(i); }
+    else { norm += c; map.push(i); }
+  }
+  const clean = cleanPattern(pattern);
+  const cands = clean.split(/[\/、／]/).filter(Boolean).map(v=>v.trim()).filter(Boolean);
+  const BAD = new Set(['は','に','を','が','で','と','も','の','へ','か','ね','よ','な','や','だ','です','ます','ない','こと']);
+  const extra=[];
+  cands.forEach(c=>{ c.split(/[…⋯〜～]/).forEach(p=>{ p=p.trim(); if(p.length>=2 && !BAD.has(p) && !cands.includes(p)) extra.push(p); }); });
+  extra.forEach(p=>cands.push(p));
+  const uniq=[...new Set(cands)].sort((a,b)=>b.length-a.length);
+  let hit=null;
+  for(const c of uniq){
+    const nc=kataToHira(c);
+    const idx=norm.indexOf(nc);
+    if(idx>=0){ hit={nc, len:nc.length}; break; }
+  }
+  if(!hit) return esc(sentence);
+  const ranges=[];
+  let from=0;
+  while(from < norm.length){
+    const i=norm.indexOf(hit.nc, from);
+    if(i<0) break;
+    ranges.push([map[i], map[i+hit.len-1]+1]);
+    from = i + hit.len;
+  }
+  let html='', pos=0;
+  ranges.forEach(([a,b])=>{
+    html += esc(sentence.slice(pos,a)) + '<mark>' + esc(sentence.slice(a,b)) + '</mark>';
+    pos = b;
+  });
+  html += esc(sentence.slice(pos));
+  return html;
+}
+const curSpeakText = () => flipped ? curWord : curPattern;
+
 // build filter dropdowns
 (function initFilters(){
   const cats=[...new Set(DATA.map(cat))].sort();
@@ -222,7 +288,7 @@ const meaning = d => (d.meaning||'').trim() || '（暂无释义）';
     const na=parseInt(a), nb=parseInt(b); return (isNaN(na)||isNaN(nb))? a.localeCompare(b):na-nb;
   });
   cats.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; $('category').appendChild(o); });
-  uns.forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent='第'+u+'单元'; $('unit').appendChild(o); });
+  uns.forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent=unitLabel(u); $('unit').appendChild(o); });
 })();
 
 function buildFiltered(){
@@ -247,7 +313,7 @@ function badges(d, front){
   const b=[];
   b.push(`<span class="badge id">#${d.id}</span>`);
   const l=lv(d); if(l==='1级') b.push(`<span class="badge lv1">1级</span>`); else if(l==='2级') b.push(`<span class="badge lv2">2级</span>`);
-  b.push(`<span class="badge">第${unit(d)}单元</span>`);
+  b.push(`<span class="badge">${esc(unitLabel(unit(d)))}</span>`);
   b.push(`<span class="badge">${esc(cat(d))}</span>`);
   return b.join('');
 }
@@ -263,29 +329,33 @@ function render(){
   $('card').style.display='';
   const d = list[state.idx];
   $('fBadges').innerHTML = badges(d);
-  $('fExJp').innerHTML = esc(d.ex_jp || '（暂无例句）');
+  $('fExJp').innerHTML = hlPattern(d.ex_jp || '', d.pattern);
   $('fExCn').innerHTML = esc(d.ex_cn || '');
   $('fPatternHint').innerHTML = '句型：' + esc(d.pattern) + ' ｜ 接続：' + esc(d.conn||'（不限）');
   $('bBadges').innerHTML = badges(d);
+  $('bWord').innerHTML = esc(cleanPattern(d.pattern));
   $('bMeaning').innerHTML = esc(meaning(d));
   $('bConn').innerHTML = '接続：' + esc(d.conn||'（不限）');
   $('bPatternFoot').innerHTML = '句型：' + esc(d.pattern);
   $('pos').textContent = (state.idx+1) + ' / ' + list.length;
   $('card').classList.remove('flipped');
+  flipped = false;
   curPattern = (d.ex_jp && d.ex_jp.trim()) ? d.ex_jp : (d.pattern || '');
-  if(autoSpeak) speak(curPattern);
+  curWord = cleanPattern(d.pattern);
+  if(autoSpeak) speak(curPattern, 'sentence');
   updateStats();
 }
 
 function updateStats(){
+  const list = state.filtered || [];
   let ok=0, bad=0;
-  DATA.forEach(d=>{ if(marks[d.id]==='known') ok++; else if(marks[d.id]==='unknown') bad++; });
-  const total=DATA.length;
-  $('sOk').textContent=ok; $('sBad').textContent=bad; $('sNew').textContent=total-ok-bad;
-  const pct=Math.round(ok/total*100); $('sPct').textContent=pct+'%'; $('bar').style.width=pct+'%';
+  list.forEach(d=>{ if(marks[d.id]==='known') ok++; else if(marks[d.id]==='unknown') bad++; });
+  const total=list.length;
+  $('sOk').textContent=ok; $('sBad').textContent=bad; $('sNew').textContent=Math.max(0,total-ok-bad);
+  const pct=total? Math.round(ok/total*100):0; $('sPct').textContent=pct+'%'; $('bar').style.width=pct+'%';
 }
 
-function flip(){ $('card').classList.toggle('flipped'); }
+function flip(){ flipped = !flipped; $('card').classList.toggle('flipped'); }
 function next(){ if(state.filtered.length===0) return; state.idx=(state.idx+1)%state.filtered.length; render(); }
 function prev(){ if(state.filtered.length===0) return; state.idx=(state.idx-1+state.filtered.length)%state.filtered.length; render(); }
 
@@ -309,16 +379,16 @@ $('nextBtn').addEventListener('click', next);
 $('prevBtn').addEventListener('click', prev);
 $('btnOk').addEventListener('click', e=>{ e.stopPropagation(); mark('known'); });
 $('btnBad').addEventListener('click', e=>{ e.stopPropagation(); mark('unknown'); });
-$('search').addEventListener('input', e=>{ state.search=e.target.value; buildFiltered(); render(); });
-$('level').addEventListener('change', e=>{ state.level=e.target.value; buildFiltered(); render(); });
-$('category').addEventListener('change', e=>{ state.category=e.target.value; buildFiltered(); render(); });
-$('unit').addEventListener('change', e=>{ state.unit=e.target.value; buildFiltered(); render(); });
-$('mode').addEventListener('change', e=>{ state.mode=e.target.value; buildFiltered(); render(); });
+$('search').addEventListener('input', e=>{ state.search=e.target.value; state.idx=0; buildFiltered(); render(); });
+$('level').addEventListener('change', e=>{ state.level=e.target.value; state.idx=0; buildFiltered(); render(); });
+$('category').addEventListener('change', e=>{ state.category=e.target.value; state.idx=0; buildFiltered(); render(); });
+$('unit').addEventListener('change', e=>{ state.unit=e.target.value; state.idx=0; buildFiltered(); render(); });
+$('mode').addEventListener('change', e=>{ state.mode=e.target.value; state.idx=0; buildFiltered(); render(); });
 $('shuffleBtn').addEventListener('click', ()=>{ state.filtered = state.filtered.slice().sort(()=>Math.random()-0.5); state.idx=0; render(); });
-$('speakBtn').addEventListener('click', e=>{ e.stopPropagation(); speak(curPattern); });
-$('autoSpeak').addEventListener('change', e=>{ autoSpeak = e.target.checked; if(autoSpeak) speak(curPattern); });
-$('voiceSel').addEventListener('change', e=>{ selectedVoice = e.target.value; if(selectedVoice) speakLocal(curPattern); });
-$('cloudTTS').addEventListener('change', e=>{ cloudMode = e.target.checked; if(cloudMode) speak(curPattern); else speakLocal(curPattern); });
+$('speakBtn').addEventListener('click', e=>{ e.stopPropagation(); speak(curSpeakText(), flipped?'word':'sentence'); });
+$('autoSpeak').addEventListener('change', e=>{ autoSpeak = e.target.checked; if(autoSpeak) speak(curSpeakText(), flipped?'word':'sentence'); });
+$('voiceSel').addEventListener('change', e=>{ selectedVoice = e.target.value; if(selectedVoice) speakLocal(curSpeakText()); });
+$('cloudTTS').addEventListener('change', e=>{ cloudMode = e.target.checked; if(cloudMode) speak(curSpeakText(), flipped?'word':'sentence'); else speakLocal(curSpeakText()); });
 $('resetBtn').addEventListener('click', ()=>{ if(confirm('确定要清空所有“认识/不认识”的标记吗？')){ marks={}; saveMarks(); buildFiltered(); render(); } });
 
 document.addEventListener('keydown', e=>{
@@ -328,7 +398,7 @@ document.addEventListener('keydown', e=>{
   else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
   else if(e.key==='k'||e.key==='K'){ mark('known'); }
   else if(e.key==='j'||e.key==='J'){ mark('unknown'); }
-  else if(e.key==='s'||e.key==='S'){ speak(curPattern); }
+  else if(e.key==='s'||e.key==='S'){ speak(curSpeakText(), flipped?'word':'sentence'); }
 });
 
 try{
