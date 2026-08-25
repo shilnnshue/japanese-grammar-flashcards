@@ -164,6 +164,7 @@ const state = { idx:0, filtered:[], level:'all', category:'all', unit:'all', mod
 let autoSpeak = false;
 let curPattern = '';
 let curWord = '';
+let curId = 0;
 let flipped = false;
 
 const synth = window.speechSynthesis || null;
@@ -206,8 +207,37 @@ function playCloud(text){
 }
 function speak(text, kind){
   if(!text) return;
-  if(cloudMode){ playCloud(text); return; }
-  speakLocal(text);
+  if(kind==='word'){ playLocalWord(curId, ()=>{ if(cloudMode){ playCloud(text); return; } speakLocal(text); }); return; }
+  // 1) 优先播放本地自然语音（audio/001.mp3 … 368.mp3，离线真人级）
+  playLocalFile(curId, ()=>{
+    // 2) 本地文件缺失/失败时兜底：云端 → 系统语音
+    if(cloudMode){ playCloud(text); return; }
+    speakLocal(text);
+  });
+}
+function playLocalWord(id, fallback){
+  if(!id || typeof Audio==='undefined'){ fallback(); return; }
+  try{
+    if(!audioEl){ audioEl = new Audio(); }
+    if(!audioEl){ fallback(); return; }
+    let done = false;
+    audioEl.onerror = ()=>{ if(!done){ done = true; fallback(); } };
+    audioEl.src = 'audio/w/' + String(id).padStart(3,'0') + '.mp3';
+    const p = audioEl.play();
+    if(p && p.catch) p.catch(()=>{ if(!done){ done = true; fallback(); } });
+  }catch(e){ fallback(); }
+}
+function playLocalFile(id, fallback){
+  if(!id || typeof Audio==='undefined'){ fallback(); return; }
+  try{
+    if(!audioEl){ audioEl = new Audio(); }
+    if(!audioEl){ fallback(); return; }
+    let done = false;
+    audioEl.onerror = ()=>{ if(!done){ done = true; fallback(); } };
+    audioEl.src = 'audio/' + String(id).padStart(3,'0') + '.mp3';
+    const p = audioEl.play();
+    if(p && p.catch) p.catch(()=>{ if(!done){ done = true; fallback(); } });
+  }catch(e){ fallback(); }
 }
 
 function loadMarks(){ try{ return JSON.parse(localStorage.getItem(LS_KEY))||{}; }catch(e){ return {}; } }
@@ -340,6 +370,7 @@ function render(){
   $('pos').textContent = (state.idx+1) + ' / ' + list.length;
   $('card').classList.remove('flipped');
   flipped = false;
+  curId = d.id || 0;
   curPattern = (d.ex_jp && d.ex_jp.trim()) ? d.ex_jp : (d.pattern || '');
   curWord = cleanPattern(d.pattern);
   if(autoSpeak) speak(curPattern, 'sentence');
