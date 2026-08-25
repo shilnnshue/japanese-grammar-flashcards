@@ -108,8 +108,7 @@
       <label class="spk"><input type="checkbox" id="autoSpeak"> 🔊 自动朗读</label>
     </div>
     <div class="row">
-      <label class="spk">发音 <select id="voiceSel"><option value="">默认日语语音</option></select></label>
-      <label class="spk"><input type="checkbox" id="cloudTTS" checked> 🌐 云端更自然（需联网）</label>
+      <label class="spk">🔊 仅本地自然语音（微软 Nanami 真人级，离线可用）</label>
     </div>
   </div>
 
@@ -167,53 +166,20 @@ let curWord = '';
 let curId = 0;
 let flipped = false;
 
-const synth = window.speechSynthesis || null;
 let audioEl = null;
-let cloudMode = true;
-let selectedVoice = '';
 
-function loadVoices(){
-  if(!synth || !$('voiceSel')) return;
-  try{
-    const vs = synth.getVoices().filter(v=>v.lang && v.lang.toLowerCase().startsWith('ja'));
-    const sel = $('voiceSel');
-    const cur = sel.value;
-    sel.innerHTML = '<option value="">默认日语语音</option>';
-    vs.forEach(v=>{ const o=document.createElement('option'); o.value=v.name; o.textContent=v.name+' ('+v.lang+')'; sel.appendChild(o); });
-    if(cur) sel.value = cur;
-  }catch(e){}
-}
-if(synth){ try{ loadVoices(); synth.onvoiceschanged = loadVoices; }catch(e){} }
+// 仅使用本地合成的自然语音（微软 Nanami 神经音），不加载系统语音、不调用云端接口，避免机械音
 
-function speakLocal(text){
-  if(!synth || !text) return;
-  try{
-    synth.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'ja-JP'; u.rate = 0.95; u.pitch = 1.0;
-    if(selectedVoice){ const v = synth.getVoices().find(x=>x.name===selectedVoice); if(v) u.voice = v; }
-    synth.speak(u);
-  }catch(e){}
-}
-function playCloud(text){
-  if(!audioEl){ try{ audioEl = new Audio(); }catch(e){ audioEl = null; } }
-  if(!audioEl){ speakLocal(text); return; }
-  try{
-    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=' + encodeURIComponent(text);
-    audioEl.src = url;
-    const p = audioEl.play();
-    if(p && p.catch) p.catch(()=>speakLocal(text));
-  }catch(e){ speakLocal(text); }
+function onLocalMiss(){
+  const t = document.getElementById('toast');
+  if(t){ t.textContent = '本张暂无本地语音文件（请确认与 audio 文件夹放在一起）'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2400); }
+  else console.warn('local audio missing for id', curId);
 }
 function speak(text, kind){
   if(!text) return;
-  if(kind==='word'){ playLocalWord(curId, ()=>{ if(cloudMode){ playCloud(text); return; } speakLocal(text); }); return; }
-  // 1) 优先播放本地自然语音（audio/001.mp3 … 368.mp3，离线真人级）
-  playLocalFile(curId, ()=>{
-    // 2) 本地文件缺失/失败时兜底：云端 → 系统语音
-    if(cloudMode){ playCloud(text); return; }
-    speakLocal(text);
-  });
+  // 仅播放本地自然语音：例句 audio/001.mp3 … 368.mp3；单词 audio/w/001.mp3 …，不回退机械音或云端
+  if(kind==='word'){ playLocalWord(curId, onLocalMiss); return; }
+  playLocalFile(curId, onLocalMiss);
 }
 function playLocalWord(id, fallback){
   if(!id || typeof Audio==='undefined'){ fallback(); return; }
@@ -418,8 +384,7 @@ $('mode').addEventListener('change', e=>{ state.mode=e.target.value; state.idx=0
 $('shuffleBtn').addEventListener('click', ()=>{ state.filtered = state.filtered.slice().sort(()=>Math.random()-0.5); state.idx=0; render(); });
 $('speakBtn').addEventListener('click', e=>{ e.stopPropagation(); speak(curSpeakText(), flipped?'word':'sentence'); });
 $('autoSpeak').addEventListener('change', e=>{ autoSpeak = e.target.checked; if(autoSpeak) speak(curSpeakText(), flipped?'word':'sentence'); });
-$('voiceSel').addEventListener('change', e=>{ selectedVoice = e.target.value; if(selectedVoice) speakLocal(curSpeakText()); });
-$('cloudTTS').addEventListener('change', e=>{ cloudMode = e.target.checked; if(cloudMode) speak(curSpeakText(), flipped?'word':'sentence'); else speakLocal(curSpeakText()); });
+// 语音部分：仅本地自然语音，无云端 / 系统语音切换控件
 $('resetBtn').addEventListener('click', ()=>{ if(confirm('确定要清空所有“认识/不认识”的标记吗？')){ marks={}; saveMarks(); buildFiltered(); render(); } });
 
 document.addEventListener('keydown', e=>{
