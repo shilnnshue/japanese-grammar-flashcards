@@ -37,6 +37,7 @@
   .scene{perspective:1400px; margin:6px 0 14px;}
   .card{position:relative; width:100%; height:340px; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.1,.2,1); cursor:pointer;}
   .card.flipped{transform:rotateY(180deg);}
+  .card.mastered .face{box-shadow:0 0 0 3px #4caf6e, var(--shadow);}
   .face{position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
     background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow);
     display:flex; flex-direction:column; padding:20px; overflow:hidden;}
@@ -46,6 +47,7 @@
   .badge.lv1{background:#fbe9e6; color:var(--bad); border-color:#f3c9c1;}
   .badge.lv2{background:#e7f0f5; color:var(--accent2); border-color:#c6dce8;}
   .badge.id{background:#f3eede; color:#8a7d5e;}
+  .badge.mastered{background:var(--ok); color:#fff; border-color:var(--ok); font-weight:700;}
   .center{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px;}
   .pattern{font-size:30px; font-weight:600; line-height:1.4; color:var(--ink);}
   .meaning{font-size:17px; font-weight:600; color:var(--accent); line-height:1.5;}
@@ -65,6 +67,8 @@
   .markrow button{flex:1; max-width:200px; padding:13px; font-size:15px; font-weight:600;}
   .mk-bad{background:#fbe9e6; color:var(--bad); border:1px solid #f0c4bc;}
   .mk-ok{background:#e6f4ec; color:var(--ok); border:1px solid #b9e0c8;}
+  .mk-mastered{background:#e3f3e9; color:#1f7a4d; border:1px solid #a9dcbf;}
+  .markrow button.active{box-shadow:0 0 0 3px rgba(43,43,43,.18) inset; font-weight:700;}
   .keys{font-size:12px; color:#a99e88; text-align:center; line-height:1.7;}
   .spk{display:inline-flex; align-items:center; gap:5px; font-size:13px; color:var(--sub); cursor:pointer; user-select:none;}
   .spk input{accent-color:var(--accent);}
@@ -90,10 +94,11 @@
   </header>
 
   <div class="stats">
-    <div class="stat ok">认识 <b id="sOk">0</b></div>
-    <div class="stat bad">不认识 <b id="sBad">0</b></div>
-    <div class="stat">未学 <b id="sNew">368</b></div>
-    <div class="stat">完成度 <b id="sPct">0%</b></div>
+      <div class="stat ok">认识 <b id="sOk">0</b></div>
+      <div class="stat bad">不认识 <b id="sBad">0</b></div>
+      <div class="stat" style="border-color:#bfe3cb;">已掌握 <b id="sMastered">0</b></div>
+      <div class="stat">未学 <b id="sNew">368</b></div>
+      <div class="stat">完成度 <b id="sPct">0%</b></div>
   </div>
   <div class="bar"><i id="bar"></i></div>
 
@@ -108,7 +113,7 @@
     <div class="row">
       <select id="mode">
         <option value="all">模式：全部</option>
-        <option value="unmastered">模式：仅未掌握</option>
+        <option value="unmastered">模式：复习（未掌握）</option>
         <option value="mastered">模式：仅已掌握</option>
         <option value="shuffle">模式：随机</option>
       </select>
@@ -125,6 +130,7 @@
   </div>
 
   <div class="scene">
+    <div class="empty" id="emptyMsg" style="display:none;">没有符合条件的卡片，试试调整筛选或重置进度。</div>
     <div class="card" id="card">
       <div class="face front">
         <div class="badges" id="fBadges"></div>
@@ -143,7 +149,7 @@
           <div class="conn" id="bConn"></div>
           <div class="foot" id="bPatternFoot"></div>
         </div>
-        <div class="hint">点击 <b>认识</b> 或 <b>不认识</b> 记录掌握情况 · <kbd>S</kbd> 朗读单词</div>
+        <div class="hint">点击 <b>认识</b> / <b>不认识</b> / <b>已掌握</b> 记录掌握情况 · <kbd>S</kbd> 朗读单词</div>
       </div>
     </div>
   </div>
@@ -151,6 +157,7 @@
   <div class="markrow">
     <button class="mk-bad" id="btnBad">✗ 不认识</button>
     <button class="mk-ok" id="btnOk">✓ 认识</button>
+    <button class="mk-mastered" id="btnMastered">🏆 已掌握</button>
   </div>
 
   <div class="nav">
@@ -162,7 +169,7 @@
   </div>
 
   <div class="keys">
-    快捷键：<kbd>←</kbd> 上一张 · <kbd>→</kbd> 下一张 · <kbd>空格</kbd> 翻面 · <kbd>S</kbd> 朗读 · <kbd>K</kbd> 认识 · <kbd>J</kbd> 不认识
+    快捷键：<kbd>←</kbd> 上一张 · <kbd>→</kbd> 下一张 · <kbd>空格</kbd> 翻面 · <kbd>S</kbd> 朗读 · <kbd>K</kbd> 认识 · <kbd>J</kbd> 不认识 · <kbd>M</kbd> 已掌握
   </div>
 </div>
 
@@ -235,7 +242,8 @@ function exportMarks(){
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
   const known = Object.values(marks).filter(v=>v==='known').length;
   const unknown = Object.values(marks).filter(v=>v==='unknown').length;
-  alert('已导出进度文件：'+name+'\n（含 '+Object.keys(marks).length+' 张标记，认识 '+known+' · 不认识 '+unknown+'）\n可保存到网盘/发给其他设备，再用“导入进度”恢复。');
+  const mastered = Object.values(marks).filter(v=>v==='mastered').length;
+  alert('已导出进度文件：'+name+'\n（含 '+Object.keys(marks).length+' 张标记：认识 '+known+' · 不认识 '+unknown+' · 已掌握 '+mastered+'）\n可保存到网盘/发给其他设备，再用“导入进度”恢复。');
 }
 function importMarks(file){
   const reader = new FileReader();
@@ -245,7 +253,7 @@ function importMarks(file){
       const incoming = (data && data.marks && typeof data.marks==='object') ? data.marks
                      : (data && typeof data==='object') ? data : null;
       if(!incoming){ alert('文件格式无法识别，请选择本应用导出的进度文件。'); return; }
-      const ids = Object.keys(incoming).filter(k=>incoming[k]==='known'||incoming[k]==='unknown');
+      const ids = Object.keys(incoming).filter(k=>incoming[k]==='known'||incoming[k]==='unknown'||incoming[k]==='mastered');
       if(ids.length===0){ alert('该进度文件为空，没有可导入的内容。'); return; }
       const hasExisting = Object.keys(marks).length>0;
       const merge = hasExisting ? confirm('检测到当前已有进度。\n点“确定”=把文件进度合并进来（同卡片以文件为准）；\n点“取消”=用文件进度覆盖当前全部进度。') : true;
@@ -255,7 +263,8 @@ function importMarks(file){
       saveMarks(); buildFiltered(); render();
       const known = Object.values(marks).filter(v=>v==='known').length;
       const unknown = Object.values(marks).filter(v=>v==='unknown').length;
-      alert('进度导入成功！\n当前共标记 '+Object.keys(marks).length+' 张：认识 '+known+' · 不认识 '+unknown);
+      const mastered = Object.values(marks).filter(v=>v==='mastered').length;
+      alert('进度导入成功！\n当前共标记 '+Object.keys(marks).length+' 张：认识 '+known+' · 不认识 '+unknown+' · 已掌握 '+mastered);
     }catch(err){ alert('读取失败：'+err.message); }
   };
   reader.readAsText(file);
@@ -364,9 +373,9 @@ function buildFiltered(){
     if(state.levels.size && !state.levels.has(lv(d))) return false;
     if(state.categories.size && !state.categories.has(cat(d))) return false;
     if(state.units.size && !state.units.has(unit(d))) return false;
-    if(state.mode==='unmastered' && marks[d.id]==='known') return false;
-    if(state.mode==='mastered' && marks[d.id]!=='known') return false;
-    if(q && !((d.pattern||'').toLowerCase().includes(q) || meaning(d).toLowerCase().includes(q) || String(d.id)===q)) return false;
+    if(state.mode==='unmastered' && marks[d.id]==='mastered') return false;
+    if(state.mode==='mastered' && marks[d.id]!=='mastered') return false;
+    if(q && !((d.pattern||'').toLowerCase().includes(q) || meaning(d).toLowerCase().includes(q) || (d.ex_jp||'').toLowerCase().includes(q) || (d.ex_cn||'').toLowerCase().includes(q) || (d.conn||'').toLowerCase().includes(q) || String(d.id)===q)) return false;
     return true;
   });
   if(state.mode==='shuffle'){ list = list.slice().sort(()=>Math.random()-0.5); }
@@ -382,17 +391,19 @@ function badges(d, front){
   const l=lv(d); if(l==='1级') b.push(`<span class="badge lv1">1级</span>`); else if(l==='2级') b.push(`<span class="badge lv2">2级</span>`);
   b.push(`<span class="badge">${esc(unitLabel(unit(d)))}</span>`);
   b.push(`<span class="badge">${esc(cat(d))}</span>`);
+  if(marks[d.id]==='mastered') b.unshift(`<span class="badge mastered">✓ 已掌握</span>`);
   return b.join('');
 }
 
 function render(){
   const list = state.filtered;
+  const empty = $('emptyMsg');
   if(list.length===0){
     $('card').style.display='none';
-    const scene=document.querySelector('.scene');
-    scene.innerHTML='<div class="empty">没有符合条件的卡片，试试调整筛选或重置进度。</div>';
+    if(empty) empty.style.display='';
     $('pos').textContent='0 / 0'; updateStats(); return;
   }
+  if(empty) empty.style.display='none';
   $('card').style.display='';
   const d = list[state.idx];
   $('fBadges').innerHTML = badges(d);
@@ -406,6 +417,10 @@ function render(){
   $('bPatternFoot').innerHTML = '句型：' + esc(d.pattern);
   $('pos').textContent = (state.idx+1) + ' / ' + list.length;
   $('card').classList.remove('flipped');
+  $('card').classList.toggle('mastered', marks[d.id]==='mastered');
+  $('btnOk').classList.toggle('active', marks[d.id]==='known');
+  $('btnBad').classList.toggle('active', marks[d.id]==='unknown');
+  $('btnMastered').classList.toggle('active', marks[d.id]==='mastered');
   flipped = false;
   curId = d.id || 0;
   curPattern = (d.ex_jp && d.ex_jp.trim()) ? d.ex_jp : (d.pattern || '');
@@ -416,11 +431,15 @@ function render(){
 
 function updateStats(){
   const list = state.filtered || [];
-  let ok=0, bad=0;
-  list.forEach(d=>{ if(marks[d.id]==='known') ok++; else if(marks[d.id]==='unknown') bad++; });
+  let ok=0, bad=0, mastered=0;
+  list.forEach(d=>{
+    const m=marks[d.id];
+    if(m==='mastered') mastered++; else if(m==='known') ok++; else if(m==='unknown') bad++;
+  });
   const total=list.length;
-  $('sOk').textContent=ok; $('sBad').textContent=bad; $('sNew').textContent=Math.max(0,total-ok-bad);
-  const pct=total? Math.round(ok/total*100):0; $('sPct').textContent=pct+'%'; $('bar').style.width=pct+'%';
+  $('sOk').textContent=ok; $('sBad').textContent=bad; $('sMastered').textContent=mastered;
+  $('sNew').textContent=Math.max(0,total-ok-bad-mastered);
+  const pct=total? Math.round((ok+mastered)/total*100):0; $('sPct').textContent=pct+'%'; $('bar').style.width=pct+'%';
 }
 
 function flip(){
@@ -436,7 +455,7 @@ function mark(val){
   const d = state.filtered[state.idx];
   if(!d) return;
   marks[d.id]=val; saveMarks();
-  if(state.mode==='unmastered' && val==='known'){
+  if(state.mode==='unmastered' && val==='mastered'){
     state.filtered.splice(state.idx,1);
     if(state.idx>=state.filtered.length) state.idx=Math.max(0,state.filtered.length-1);
   } else {
@@ -452,6 +471,7 @@ $('nextBtn').addEventListener('click', next);
 $('prevBtn').addEventListener('click', prev);
 $('btnOk').addEventListener('click', e=>{ e.stopPropagation(); mark('known'); });
 $('btnBad').addEventListener('click', e=>{ e.stopPropagation(); mark('unknown'); });
+$('btnMastered').addEventListener('click', e=>{ e.stopPropagation(); mark('mastered'); });
 $('search').addEventListener('input', e=>{ state.search=e.target.value; state.idx=0; buildFiltered(); render(); });
 document.querySelector('.toolbar').addEventListener('change', e=>{
   const cb=e.target.closest('input[type=checkbox][data-set]'); if(!cb) return;
@@ -461,7 +481,7 @@ document.querySelector('.toolbar').addEventListener('change', e=>{
 });
 $('clearFilters').addEventListener('click', ()=>{
   state.levels.clear(); state.categories.clear(); state.units.clear();
-  document.querySelectorAll('.toolbar input[type=checkbox]').forEach(cb=>cb.checked=false);
+  document.querySelectorAll('.toolbar input[type=checkbox][data-set]').forEach(cb=>cb.checked=false);
   state.idx=0; syncSummary(); buildFiltered(); render();
 });
 $('mode').addEventListener('change', e=>{ state.mode=e.target.value; state.idx=0; buildFiltered(); render(); });
@@ -469,7 +489,7 @@ $('shuffleBtn').addEventListener('click', ()=>{ state.filtered = state.filtered.
 $('speakBtn').addEventListener('click', e=>{ e.stopPropagation(); speak(curSpeakText(), flipped?'word':'sentence'); });
 $('autoSpeak').addEventListener('change', e=>{ autoSpeak = e.target.checked; if(autoSpeak) speak(curSpeakText(), flipped?'word':'sentence'); });
 // 语音部分：仅本地自然语音，无云端 / 系统语音切换控件
-$('resetBtn').addEventListener('click', ()=>{ if(confirm('确定要清空所有“认识/不认识”的标记吗？')){ marks={}; saveMarks(); buildFiltered(); render(); } });
+$('resetBtn').addEventListener('click', ()=>{ if(confirm('确定要清空所有“认识/不认识/已掌握”的标记吗？此操作不可撤销。')){ marks={}; saveMarks(); buildFiltered(); render(); } });
 $('exportBtn').addEventListener('click', exportMarks);
 $('importBtn').addEventListener('click', ()=> $('importFile').click());
 $('importFile').addEventListener('change', e=>{ const f=e.target.files&&e.target.files[0]; if(f) importMarks(f); e.target.value=''; });
@@ -481,6 +501,7 @@ document.addEventListener('keydown', e=>{
   else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
   else if(e.key==='k'||e.key==='K'){ mark('known'); }
   else if(e.key==='j'||e.key==='J'){ mark('unknown'); }
+  else if(e.key==='m'||e.key==='M'){ mark('mastered'); }
   else if(e.key==='s'||e.key==='S'){ speak(curSpeakText(), flipped?'word':'sentence'); }
 });
 
@@ -488,8 +509,9 @@ try{
   buildFiltered();
   render();
 }catch(err){
-  const sc = document.querySelector('.scene');
-  if(sc) sc.innerHTML = '<div class="empty">出错了：' + (err && err.message ? err.message : err) + '</div>';
+  const em = $('emptyMsg');
+  if(em){ em.style.display=''; em.textContent = '出错了：' + (err && err.message ? err.message : err); }
+  else { const sc = document.querySelector('.scene'); if(sc) sc.innerHTML = '<div class="empty">出错了</div>'; }
   if(window.console) console.error(err);
 }
 </script>
