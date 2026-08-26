@@ -19,6 +19,7 @@ jobs:
         run: |
           mkdir -p _publish
           cp "日语语法闪卡.html" _publish/index.html
+          cp "使用说明.html" _publish/使用说明.html
           cp -r audio _publish/audio
 
       - name: Deploy to gh-pages

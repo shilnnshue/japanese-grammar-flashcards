@@ -72,6 +72,14 @@
   .empty{text-align:center; color:var(--sub); padding:40px 0;}
   .bar{height:8px; background:var(--chip); border-radius:999px; overflow:hidden; margin-top:4px;}
   .bar > i{display:block; height:100%; background:linear-gradient(90deg,var(--ok),#7fc99a); width:0; transition:width .3s;}
+  .fgroup{position:relative; display:inline-block;}
+  .fgroup > summary{list-style:none; cursor:pointer; padding:7px 12px; border:1px solid var(--line); border-radius:9px; background:var(--chip); font-size:13px; user-select:none; color:var(--ink);}
+  .fgroup > summary::-webkit-details-marker{display:none;}
+  .fgroup > summary::after{content:'▾'; margin-left:6px; opacity:.55; font-size:11px;}
+  .fgroup[open] > summary::after{content:'▴';}
+  .fgroup .checks{position:absolute; z-index:30; top:calc(100% + 6px); left:0; min-width:170px; max-height:320px; overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); display:flex; flex-direction:column; gap:7px;}
+  .fgroup .chk{display:flex; align-items:center; gap:8px; font-size:13px; white-space:nowrap; cursor:pointer; color:var(--ink);}
+  .fgroup .chk input{accent-color:var(--accent); width:15px; height:15px;}
 </style>
 </head>
 <body>
@@ -92,9 +100,10 @@
   <div class="toolbar">
     <div class="row">
       <input type="search" id="search" placeholder="搜索句型或释义…" autocomplete="off">
-      <select id="level"><option value="all">全部级别</option><option value="1级">1级</option><option value="2级">2级</option></select>
-      <select id="category"><option value="all">全部分类</option></select>
-      <select id="unit"><option value="all">全部单元</option></select>
+      <details class="fgroup" id="lvGrp"><summary id="lvSum">级别：全部</summary><div class="checks" id="lvChecks"></div></details>
+      <details class="fgroup" id="catGrp"><summary id="catSum">分类：全部</summary><div class="checks" id="catChecks"></div></details>
+      <details class="fgroup" id="unitGrp"><summary id="unitSum">单元：全部</summary><div class="checks" id="unitChecks"></div></details>
+      <button class="ghost" id="clearFilters" type="button">✕ 清空筛选</button>
     </div>
     <div class="row">
       <select id="mode">
@@ -105,6 +114,9 @@
       </select>
       <button class="ghost" id="shuffleBtn">🔀 打乱顺序</button>
       <button class="ghost" id="resetBtn">↺ 重置进度</button>
+      <button class="ghost" id="exportBtn">⬇️ 导出进度</button>
+      <button class="ghost" id="importBtn">⬆️ 导入进度</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
       <label class="spk"><input type="checkbox" id="autoSpeak"> 🔊 自动朗读</label>
     </div>
     <div class="row">
@@ -159,7 +171,7 @@ const DATA = [{"id": 1, "unit": "1目的•原因•理由", "noun": "", "na": "
 
 const LS_KEY = 'jp1_2_grammar_marks_v1';
 let marks = loadMarks();
-const state = { idx:0, filtered:[], level:'all', category:'all', unit:'all', mode:'all', search:'' };
+const state = { idx:0, filtered:[], levels:new Set(), categories:new Set(), units:new Set(), mode:'all', search:'' };
 let autoSpeak = false;
 let curPattern = '';
 let curWord = '';
@@ -167,6 +179,9 @@ let curId = 0;
 let flipped = false;
 
 let audioEl = null;
+
+// 停止当前正在播放的本地语音（翻面/切换时先停上一个，避免重叠）
+function stopAudio(){ if(audioEl){ try{ audioEl.pause(); audioEl.currentTime = 0; }catch(e){} } }
 
 // 仅使用本地合成的自然语音（微软 Nanami 神经音），不加载系统语音、不调用云端接口，避免机械音
 
@@ -177,6 +192,7 @@ function onLocalMiss(){
 }
 function speak(text, kind){
   if(!text) return;
+  stopAudio(); // 先停掉上一个读音，避免重叠
   // 仅播放本地自然语音：例句 audio/001.mp3 … 368.mp3；单词 audio/w/001.mp3 …，不回退机械音或云端
   if(kind==='word'){ playLocalWord(curId, onLocalMiss); return; }
   playLocalFile(curId, onLocalMiss);
@@ -208,6 +224,42 @@ function playLocalFile(id, fallback){
 
 function loadMarks(){ try{ return JSON.parse(localStorage.getItem(LS_KEY))||{}; }catch(e){ return {}; } }
 function saveMarks(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(marks)); }catch(e){} }
+function exportMarks(){
+  const payload = { app:'jp-grammar-flashcards', version:1, exportedAt:new Date().toISOString(), marks:marks };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = new Date(), pad = n=>String(n).padStart(2,'0');
+  const name = '日语语法进度_'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'.json';
+  a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  const known = Object.values(marks).filter(v=>v==='known').length;
+  const unknown = Object.values(marks).filter(v=>v==='unknown').length;
+  alert('已导出进度文件：'+name+'\n（含 '+Object.keys(marks).length+' 张标记，认识 '+known+' · 不认识 '+unknown+'）\n可保存到网盘/发给其他设备，再用“导入进度”恢复。');
+}
+function importMarks(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      const incoming = (data && data.marks && typeof data.marks==='object') ? data.marks
+                     : (data && typeof data==='object') ? data : null;
+      if(!incoming){ alert('文件格式无法识别，请选择本应用导出的进度文件。'); return; }
+      const ids = Object.keys(incoming).filter(k=>incoming[k]==='known'||incoming[k]==='unknown');
+      if(ids.length===0){ alert('该进度文件为空，没有可导入的内容。'); return; }
+      const hasExisting = Object.keys(marks).length>0;
+      const merge = hasExisting ? confirm('检测到当前已有进度。\n点“确定”=把文件进度合并进来（同卡片以文件为准）；\n点“取消”=用文件进度覆盖当前全部进度。') : true;
+      const target = (merge) ? marks : (marks={});
+      ids.forEach(k=>{ target[k]=incoming[k]; });
+      if(!merge) marks = target;
+      saveMarks(); buildFiltered(); render();
+      const known = Object.values(marks).filter(v=>v==='known').length;
+      const unknown = Object.values(marks).filter(v=>v==='unknown').length;
+      alert('进度导入成功！\n当前共标记 '+Object.keys(marks).length+' 张：认识 '+known+' · 不认识 '+unknown);
+    }catch(err){ alert('读取失败：'+err.message); }
+  };
+  reader.readAsText(file);
+}
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -283,16 +335,35 @@ const curSpeakText = () => flipped ? curWord : curPattern;
   const uns=[...new Set(DATA.map(unit))].sort((a,b)=>{
     const na=parseInt(a), nb=parseInt(b); return (isNaN(na)||isNaN(nb))? a.localeCompare(b):na-nb;
   });
-  cats.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; $('category').appendChild(o); });
-  uns.forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent=unitLabel(u); $('unit').appendChild(o); });
+  buildChecks('lvChecks', ['1级','2级'], state.levels, null, 'lv');
+  buildChecks('catChecks', cats, state.categories, null, 'cat');
+  buildChecks('unitChecks', uns, state.units, unitLabel, 'unit');
 })();
+
+function buildChecks(containerId, values, set, labelFn, setKey){
+  const c=$(containerId); if(!c) return; c.innerHTML='';
+  values.forEach(v=>{
+    const lab=document.createElement('label'); lab.className='chk';
+    const cb=document.createElement('input'); cb.type='checkbox'; cb.value=v; cb.dataset.set=setKey;
+    const span=document.createElement('span'); span.textContent = labelFn ? labelFn(v) : v;
+    lab.appendChild(cb); lab.appendChild(span); c.appendChild(lab);
+  });
+}
+function syncSummary(){
+  const lv = state.levels.size ? [...state.levels].join('·') : '全部';
+  const ct = state.categories.size ? [...state.categories].join('·') : '全部';
+  const un = state.units.size ? [...state.units].map(unitLabel).join('·') : '全部';
+  if($('lvSum')) $('lvSum').textContent='级别：'+lv;
+  if($('catSum')) $('catSum').textContent='分类：'+ct;
+  if($('unitSum')) $('unitSum').textContent='单元：'+un;
+}
 
 function buildFiltered(){
   const q = state.search.trim().toLowerCase();
   let list = DATA.filter(d=>{
-    if(state.level!=='all' && lv(d)!==state.level) return false;
-    if(state.category!=='all' && cat(d)!==state.category) return false;
-    if(state.unit!=='all' && unit(d)!==state.unit) return false;
+    if(state.levels.size && !state.levels.has(lv(d))) return false;
+    if(state.categories.size && !state.categories.has(cat(d))) return false;
+    if(state.units.size && !state.units.has(unit(d))) return false;
     if(state.mode==='unmastered' && marks[d.id]==='known') return false;
     if(state.mode==='mastered' && marks[d.id]!=='known') return false;
     if(q && !((d.pattern||'').toLowerCase().includes(q) || meaning(d).toLowerCase().includes(q) || String(d.id)===q)) return false;
@@ -352,7 +423,12 @@ function updateStats(){
   const pct=total? Math.round(ok/total*100):0; $('sPct').textContent=pct+'%'; $('bar').style.width=pct+'%';
 }
 
-function flip(){ flipped = !flipped; $('card').classList.toggle('flipped'); }
+function flip(){
+  flipped = !flipped;
+  $('card').classList.toggle('flipped');
+  // 自动朗读模式：翻面立即朗读当前面（并已在 speak 内停掉上一个）
+  if(autoSpeak) speak(curSpeakText(), flipped ? 'word' : 'sentence');
+}
 function next(){ if(state.filtered.length===0) return; state.idx=(state.idx+1)%state.filtered.length; render(); }
 function prev(){ if(state.filtered.length===0) return; state.idx=(state.idx-1+state.filtered.length)%state.filtered.length; render(); }
 
@@ -377,15 +453,26 @@ $('prevBtn').addEventListener('click', prev);
 $('btnOk').addEventListener('click', e=>{ e.stopPropagation(); mark('known'); });
 $('btnBad').addEventListener('click', e=>{ e.stopPropagation(); mark('unknown'); });
 $('search').addEventListener('input', e=>{ state.search=e.target.value; state.idx=0; buildFiltered(); render(); });
-$('level').addEventListener('change', e=>{ state.level=e.target.value; state.idx=0; buildFiltered(); render(); });
-$('category').addEventListener('change', e=>{ state.category=e.target.value; state.idx=0; buildFiltered(); render(); });
-$('unit').addEventListener('change', e=>{ state.unit=e.target.value; state.idx=0; buildFiltered(); render(); });
+document.querySelector('.toolbar').addEventListener('change', e=>{
+  const cb=e.target.closest('input[type=checkbox][data-set]'); if(!cb) return;
+  const set = cb.dataset.set==='lv' ? state.levels : cb.dataset.set==='cat' ? state.categories : state.units;
+  if(cb.checked) set.add(cb.value); else set.delete(cb.value);
+  state.idx=0; syncSummary(); buildFiltered(); render();
+});
+$('clearFilters').addEventListener('click', ()=>{
+  state.levels.clear(); state.categories.clear(); state.units.clear();
+  document.querySelectorAll('.toolbar input[type=checkbox]').forEach(cb=>cb.checked=false);
+  state.idx=0; syncSummary(); buildFiltered(); render();
+});
 $('mode').addEventListener('change', e=>{ state.mode=e.target.value; state.idx=0; buildFiltered(); render(); });
 $('shuffleBtn').addEventListener('click', ()=>{ state.filtered = state.filtered.slice().sort(()=>Math.random()-0.5); state.idx=0; render(); });
 $('speakBtn').addEventListener('click', e=>{ e.stopPropagation(); speak(curSpeakText(), flipped?'word':'sentence'); });
 $('autoSpeak').addEventListener('change', e=>{ autoSpeak = e.target.checked; if(autoSpeak) speak(curSpeakText(), flipped?'word':'sentence'); });
 // 语音部分：仅本地自然语音，无云端 / 系统语音切换控件
 $('resetBtn').addEventListener('click', ()=>{ if(confirm('确定要清空所有“认识/不认识”的标记吗？')){ marks={}; saveMarks(); buildFiltered(); render(); } });
+$('exportBtn').addEventListener('click', exportMarks);
+$('importBtn').addEventListener('click', ()=> $('importFile').click());
+$('importFile').addEventListener('change', e=>{ const f=e.target.files&&e.target.files[0]; if(f) importMarks(f); e.target.value=''; });
 
 document.addEventListener('keydown', e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT') return;
