@@ -67,7 +67,6 @@
   .markrow button{flex:1; max-width:200px; padding:13px; font-size:15px; font-weight:600;}
   .mk-bad{background:#fbe9e6; color:var(--bad); border:1px solid #f0c4bc;}
   .mk-ok{background:#e6f4ec; color:var(--ok); border:1px solid #b9e0c8;}
-  .mk-mastered{background:#e3f3e9; color:#1f7a4d; border:1px solid #a9dcbf;}
   .markrow button.active{box-shadow:0 0 0 3px rgba(43,43,43,.18) inset; font-weight:700;}
   .keys{font-size:12px; color:#a99e88; text-align:center; line-height:1.7;}
   .spk{display:inline-flex; align-items:center; gap:5px; font-size:13px; color:var(--sub); cursor:pointer; user-select:none;}
@@ -84,6 +83,21 @@
   .fgroup .checks{position:absolute; z-index:30; top:calc(100% + 6px); left:0; min-width:170px; max-height:320px; overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); display:flex; flex-direction:column; gap:7px;}
   .fgroup .chk{display:flex; align-items:center; gap:8px; font-size:13px; white-space:nowrap; cursor:pointer; color:var(--ink);}
   .fgroup .chk input{accent-color:var(--accent); width:15px; height:15px;}
+  .viewswitch{display:flex; gap:8px; margin-bottom:12px;}
+  .viewswitch button{flex:1; padding:10px; font-size:15px; font-weight:600;}
+  .listtabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
+  .listtabs button{padding:6px 12px; font-size:13px;}
+  .listtabs button.active{background:var(--accent); color:#fff;}
+  .lcount{font-size:12px; color:var(--sub); margin-bottom:8px;}
+  .list{display:flex; flex-direction:column; gap:8px;}
+  .litem{display:flex; align-items:center; gap:12px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; box-shadow:var(--shadow); transition:.15s;}
+  .litem:hover{border-color:var(--accent);}
+  .litem .dot{width:9px; height:9px; border-radius:50%; flex:none;}
+  .litem .dot.known{background:var(--ok);}
+  .litem .dot.unknown{background:var(--bad);}
+  .litem .dot.new{background:#c9c2b4;}
+  .litem .lp{font-size:19px; font-weight:700; color:var(--ink); flex:none; max-width:46%;}
+  .litem .lm{flex:1; font-size:14px; color:var(--sub); text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -96,7 +110,6 @@
   <div class="stats">
       <div class="stat ok">认识 <b id="sOk">0</b></div>
       <div class="stat bad">不认识 <b id="sBad">0</b></div>
-      <div class="stat" style="border-color:#bfe3cb;">已掌握 <b id="sMastered">0</b></div>
       <div class="stat">未学 <b id="sNew">368</b></div>
       <div class="stat">完成度 <b id="sPct">0%</b></div>
   </div>
@@ -129,7 +142,12 @@
     </div>
   </div>
 
-  <div class="scene">
+  <div class="viewswitch">
+    <button id="viewCard" class="primary" type="button">🃏 闪卡</button>
+    <button id="viewList" class="ghost" type="button">📋 列表</button>
+  </div>
+
+  <div class="scene" id="sceneCard">
     <div class="empty" id="emptyMsg" style="display:none;">没有符合条件的卡片，试试调整筛选或重置进度。</div>
     <div class="card" id="card">
       <div class="face front">
@@ -149,15 +167,25 @@
           <div class="conn" id="bConn"></div>
           <div class="foot" id="bPatternFoot"></div>
         </div>
-        <div class="hint">点击 <b>认识</b> / <b>不认识</b> / <b>已掌握</b> 记录掌握情况 · <kbd>S</kbd> 朗读单词</div>
+        <div class="hint">点击 <b>认识</b>（=已掌握）或 <b>不认识</b> 记录掌握情况 · <kbd>S</kbd> 朗读单词</div>
       </div>
     </div>
+  </div>
+
+  <div id="sceneList" style="display:none;">
+    <div class="listtabs" id="listTabs">
+      <button data-s="all" class="active" type="button">全部</button>
+      <button data-s="known" type="button">认识</button>
+      <button data-s="unknown" type="button">不认识</button>
+      <button data-s="new" type="button">未学</button>
+    </div>
+    <div class="lcount" id="listCount"></div>
+    <div class="list" id="listContainer"></div>
   </div>
 
   <div class="markrow">
     <button class="mk-bad" id="btnBad">✗ 不认识</button>
     <button class="mk-ok" id="btnOk">✓ 认识</button>
-    <button class="mk-mastered" id="btnMastered">🏆 已掌握</button>
   </div>
 
   <div class="nav">
@@ -169,7 +197,7 @@
   </div>
 
   <div class="keys">
-    快捷键：<kbd>←</kbd> 上一张 · <kbd>→</kbd> 下一张 · <kbd>空格</kbd> 翻面 · <kbd>S</kbd> 朗读 · <kbd>K</kbd> 认识 · <kbd>J</kbd> 不认识 · <kbd>M</kbd> 已掌握
+    快捷键：<kbd>←</kbd> 上一张 · <kbd>→</kbd> 下一张 · <kbd>空格</kbd> 翻面 · <kbd>S</kbd> 朗读 · <kbd>K</kbd> 认识 · <kbd>J</kbd> 不认识
   </div>
 </div>
 
@@ -178,7 +206,7 @@ const DATA = [{"id": 1, "unit": "1目的•原因•理由", "noun": "", "na": "
 
 const LS_KEY = 'jp1_2_grammar_marks_v1';
 let marks = loadMarks();
-const state = { idx:0, filtered:[], levels:new Set(), categories:new Set(), units:new Set(), mode:'all', search:'' };
+const state = { idx:0, filtered:[], levels:new Set(), categories:new Set(), units:new Set(), mode:'all', search:'', view:'card', listStatus:'all' };
 let autoSpeak = false;
 let curPattern = '';
 let curWord = '';
@@ -229,7 +257,14 @@ function playLocalFile(id, fallback){
   }catch(e){ fallback(); }
 }
 
-function loadMarks(){ try{ return JSON.parse(localStorage.getItem(LS_KEY))||{}; }catch(e){ return {}; } }
+function loadMarks(){
+  try{
+    const m = JSON.parse(localStorage.getItem(LS_KEY))||{};
+    // 旧三态里的 'mastered' 合并回 'known'（认识=已掌握）
+    Object.keys(m).forEach(k=>{ if(m[k]==='mastered') m[k]='known'; });
+    return m;
+  }catch(e){ return {}; }
+}
 function saveMarks(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(marks)); }catch(e){} }
 function exportMarks(){
   const payload = { app:'jp-grammar-flashcards', version:1, exportedAt:new Date().toISOString(), marks:marks };
@@ -242,8 +277,7 @@ function exportMarks(){
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
   const known = Object.values(marks).filter(v=>v==='known').length;
   const unknown = Object.values(marks).filter(v=>v==='unknown').length;
-  const mastered = Object.values(marks).filter(v=>v==='mastered').length;
-  alert('已导出进度文件：'+name+'\n（含 '+Object.keys(marks).length+' 张标记：认识 '+known+' · 不认识 '+unknown+' · 已掌握 '+mastered+'）\n可保存到网盘/发给其他设备，再用“导入进度”恢复。');
+  alert('已导出进度文件：'+name+'\n（含 '+Object.keys(marks).length+' 张标记：认识 '+known+' · 不认识 '+unknown+'）\n可保存到网盘/发给其他设备，再用“导入进度”恢复。');
 }
 function importMarks(file){
   const reader = new FileReader();
@@ -258,13 +292,12 @@ function importMarks(file){
       const hasExisting = Object.keys(marks).length>0;
       const merge = hasExisting ? confirm('检测到当前已有进度。\n点“确定”=把文件进度合并进来（同卡片以文件为准）；\n点“取消”=用文件进度覆盖当前全部进度。') : true;
       const target = (merge) ? marks : (marks={});
-      ids.forEach(k=>{ target[k]=incoming[k]; });
+      ids.forEach(k=>{ target[k] = (incoming[k]==='mastered') ? 'known' : incoming[k]; });
       if(!merge) marks = target;
-      saveMarks(); buildFiltered(); render();
+      saveMarks(); refresh();
       const known = Object.values(marks).filter(v=>v==='known').length;
       const unknown = Object.values(marks).filter(v=>v==='unknown').length;
-      const mastered = Object.values(marks).filter(v=>v==='mastered').length;
-      alert('进度导入成功！\n当前共标记 '+Object.keys(marks).length+' 张：认识 '+known+' · 不认识 '+unknown+' · 已掌握 '+mastered);
+      alert('进度导入成功！\n当前共标记 '+Object.keys(marks).length+' 张：认识 '+known+' · 不认识 '+unknown);
     }catch(err){ alert('读取失败：'+err.message); }
   };
   reader.readAsText(file);
@@ -373,8 +406,8 @@ function buildFiltered(){
     if(state.levels.size && !state.levels.has(lv(d))) return false;
     if(state.categories.size && !state.categories.has(cat(d))) return false;
     if(state.units.size && !state.units.has(unit(d))) return false;
-    if(state.mode==='unmastered' && marks[d.id]==='mastered') return false;
-    if(state.mode==='mastered' && marks[d.id]!=='mastered') return false;
+    if(state.mode==='unmastered' && marks[d.id]==='known') return false;
+    if(state.mode==='mastered' && marks[d.id]!=='known') return false;
     if(q && !((d.pattern||'').toLowerCase().includes(q) || meaning(d).toLowerCase().includes(q) || (d.ex_jp||'').toLowerCase().includes(q) || (d.ex_cn||'').toLowerCase().includes(q) || (d.conn||'').toLowerCase().includes(q) || String(d.id)===q)) return false;
     return true;
   });
@@ -391,7 +424,7 @@ function badges(d, front){
   const l=lv(d); if(l==='1级') b.push(`<span class="badge lv1">1级</span>`); else if(l==='2级') b.push(`<span class="badge lv2">2级</span>`);
   b.push(`<span class="badge">${esc(unitLabel(unit(d)))}</span>`);
   b.push(`<span class="badge">${esc(cat(d))}</span>`);
-  if(marks[d.id]==='mastered') b.unshift(`<span class="badge mastered">✓ 已掌握</span>`);
+  if(marks[d.id]==='known') b.unshift(`<span class="badge mastered">✓ 已掌握</span>`);
   return b.join('');
 }
 
@@ -417,10 +450,9 @@ function render(){
   $('bPatternFoot').innerHTML = '句型：' + esc(d.pattern);
   $('pos').textContent = (state.idx+1) + ' / ' + list.length;
   $('card').classList.remove('flipped');
-  $('card').classList.toggle('mastered', marks[d.id]==='mastered');
+  $('card').classList.toggle('mastered', marks[d.id]==='known');
   $('btnOk').classList.toggle('active', marks[d.id]==='known');
   $('btnBad').classList.toggle('active', marks[d.id]==='unknown');
-  $('btnMastered').classList.toggle('active', marks[d.id]==='mastered');
   flipped = false;
   curId = d.id || 0;
   curPattern = (d.ex_jp && d.ex_jp.trim()) ? d.ex_jp : (d.pattern || '');
@@ -431,15 +463,12 @@ function render(){
 
 function updateStats(){
   const list = state.filtered || [];
-  let ok=0, bad=0, mastered=0;
-  list.forEach(d=>{
-    const m=marks[d.id];
-    if(m==='mastered') mastered++; else if(m==='known') ok++; else if(m==='unknown') bad++;
-  });
+  let ok=0, bad=0;
+  list.forEach(d=>{ if(marks[d.id]==='known') ok++; else if(marks[d.id]==='unknown') bad++; });
   const total=list.length;
-  $('sOk').textContent=ok; $('sBad').textContent=bad; $('sMastered').textContent=mastered;
-  $('sNew').textContent=Math.max(0,total-ok-bad-mastered);
-  const pct=total? Math.round((ok+mastered)/total*100):0; $('sPct').textContent=pct+'%'; $('bar').style.width=pct+'%';
+  $('sOk').textContent=ok; $('sBad').textContent=bad;
+  $('sNew').textContent=Math.max(0,total-ok-bad);
+  const pct=total? Math.round(ok/total*100):0; $('sPct').textContent=pct+'%'; $('bar').style.width=pct+'%';
 }
 
 function flip(){
@@ -451,11 +480,47 @@ function flip(){
 function next(){ if(state.filtered.length===0) return; state.idx=(state.idx+1)%state.filtered.length; render(); }
 function prev(){ if(state.filtered.length===0) return; state.idx=(state.idx-1+state.filtered.length)%state.filtered.length; render(); }
 
+// 根据当前视图刷新（筛选/搜索/模式/标记变化后统一入口）
+function refresh(){
+  buildFiltered();
+  if(state.view==='list'){ renderList(); } else { render(); }
+}
+// 闪卡 / 列表 视图切换
+function switchView(v){
+  state.view = v;
+  $('viewCard').classList.toggle('primary', v==='card');
+  $('viewCard').classList.toggle('ghost', v!=='card');
+  $('viewList').classList.toggle('primary', v==='list');
+  $('viewList').classList.toggle('ghost', v!=='list');
+  $('sceneCard').style.display = (v==='card') ? '' : 'none';
+  $('sceneList').style.display = (v==='list') ? '' : 'none';
+  document.querySelector('.markrow').style.display = (v==='card') ? '' : 'none';
+  document.querySelector('.nav').style.display = (v==='card') ? '' : 'none';
+  if(v==='list') renderList(); else render();
+}
+// 列表视图：每项仅显示 句型 + 意思 + 状态圆点，点击跳转对应闪卡
+function renderList(){
+  const list = state.filtered || [];
+  const status = state.listStatus;
+  const st = d => (marks[d.id]==='known') ? 'known' : (marks[d.id]==='unknown') ? 'unknown' : 'new';
+  const items = list.map((d,i)=>({d,i})).filter(x=> status==='all' || st(x.d)===status);
+  const label = {known:'认识', unknown:'不认识', new:'未学'};
+  $('listCount').textContent = '共 '+items.length+' 张' + (status==='all' ? '' : '（'+label[status]+'）');
+  $('listContainer').innerHTML = items.map(x=>{
+    const s = st(x.d);
+    return '<div class="litem" data-idx="'+x.i+'">'
+      + '<span class="dot '+s+'"></span>'
+      + '<span class="lp">'+esc(x.d.pattern)+'</span>'
+      + '<span class="lm">'+esc(meaning(x.d))+'</span>'
+      + '</div>';
+  }).join('');
+}
+
 function mark(val){
   const d = state.filtered[state.idx];
   if(!d) return;
   marks[d.id]=val; saveMarks();
-  if(state.mode==='unmastered' && val==='mastered'){
+  if(state.mode==='unmastered' && val==='known'){
     state.filtered.splice(state.idx,1);
     if(state.idx>=state.filtered.length) state.idx=Math.max(0,state.filtered.length-1);
   } else {
@@ -471,43 +536,56 @@ $('nextBtn').addEventListener('click', next);
 $('prevBtn').addEventListener('click', prev);
 $('btnOk').addEventListener('click', e=>{ e.stopPropagation(); mark('known'); });
 $('btnBad').addEventListener('click', e=>{ e.stopPropagation(); mark('unknown'); });
-$('btnMastered').addEventListener('click', e=>{ e.stopPropagation(); mark('mastered'); });
-$('search').addEventListener('input', e=>{ state.search=e.target.value; state.idx=0; buildFiltered(); render(); });
+$('search').addEventListener('input', e=>{ state.search=e.target.value; state.idx=0; refresh(); });
 document.querySelector('.toolbar').addEventListener('change', e=>{
   const cb=e.target.closest('input[type=checkbox][data-set]'); if(!cb) return;
   const set = cb.dataset.set==='lv' ? state.levels : cb.dataset.set==='cat' ? state.categories : state.units;
   if(cb.checked) set.add(cb.value); else set.delete(cb.value);
-  state.idx=0; syncSummary(); buildFiltered(); render();
+  state.idx=0; syncSummary(); refresh();
 });
 $('clearFilters').addEventListener('click', ()=>{
   state.levels.clear(); state.categories.clear(); state.units.clear();
   document.querySelectorAll('.toolbar input[type=checkbox][data-set]').forEach(cb=>cb.checked=false);
-  state.idx=0; syncSummary(); buildFiltered(); render();
+  state.idx=0; syncSummary(); refresh();
 });
-$('mode').addEventListener('change', e=>{ state.mode=e.target.value; state.idx=0; buildFiltered(); render(); });
-$('shuffleBtn').addEventListener('click', ()=>{ state.filtered = state.filtered.slice().sort(()=>Math.random()-0.5); state.idx=0; render(); });
+$('mode').addEventListener('change', e=>{ state.mode=e.target.value; state.idx=0; refresh(); });
+$('shuffleBtn').addEventListener('click', ()=>{ state.filtered = state.filtered.slice().sort(()=>Math.random()-0.5); state.idx=0; refresh(); });
 $('speakBtn').addEventListener('click', e=>{ e.stopPropagation(); speak(curSpeakText(), flipped?'word':'sentence'); });
 $('autoSpeak').addEventListener('change', e=>{ autoSpeak = e.target.checked; if(autoSpeak) speak(curSpeakText(), flipped?'word':'sentence'); });
 // 语音部分：仅本地自然语音，无云端 / 系统语音切换控件
-$('resetBtn').addEventListener('click', ()=>{ if(confirm('确定要清空所有“认识/不认识/已掌握”的标记吗？此操作不可撤销。')){ marks={}; saveMarks(); buildFiltered(); render(); } });
+$('resetBtn').addEventListener('click', ()=>{ if(confirm('确定要清空所有“认识/不认识”的标记吗？此操作不可撤销。')){ marks={}; saveMarks(); refresh(); } });
 $('exportBtn').addEventListener('click', exportMarks);
 $('importBtn').addEventListener('click', ()=> $('importFile').click());
 $('importFile').addEventListener('change', e=>{ const f=e.target.files&&e.target.files[0]; if(f) importMarks(f); e.target.value=''; });
 
+// 视图切换：闪卡 / 列表
+$('viewCard').addEventListener('click', ()=> switchView('card'));
+$('viewList').addEventListener('click', ()=> switchView('list'));
+$('listTabs').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-s]'); if(!b) return;
+  state.listStatus = b.dataset.s;
+  Array.from($('listTabs').children).forEach(x=>x.classList.toggle('active', x===b));
+  renderList();
+});
+$('listContainer').addEventListener('click', e=>{
+  const it = e.target.closest('.litem'); if(!it) return;
+  state.idx = parseInt(it.dataset.idx,10) || 0;
+  switchView('card');
+});
+
 document.addEventListener('keydown', e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT') return;
+  if(state.view==='list') return;
   if(e.key===' '){ e.preventDefault(); flip(); }
   else if(e.key==='ArrowRight'){ e.preventDefault(); next(); }
   else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
   else if(e.key==='k'||e.key==='K'){ mark('known'); }
   else if(e.key==='j'||e.key==='J'){ mark('unknown'); }
-  else if(e.key==='m'||e.key==='M'){ mark('mastered'); }
   else if(e.key==='s'||e.key==='S'){ speak(curSpeakText(), flipped?'word':'sentence'); }
 });
 
 try{
-  buildFiltered();
-  render();
+  refresh();
 }catch(err){
   const em = $('emptyMsg');
   if(em){ em.style.display=''; em.textContent = '出错了：' + (err && err.message ? err.message : err); }
