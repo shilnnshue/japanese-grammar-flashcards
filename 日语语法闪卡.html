@@ -98,6 +98,25 @@
   .litem .dot.new{background:#c9c2b4;}
   .litem .lp{font-size:19px; font-weight:700; color:var(--ink); flex:none; max-width:46%;}
   .litem .lm{flex:1; font-size:14px; color:var(--sub); text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+  /* 打赏弹窗 */
+  .modal-mask{position:fixed; inset:0; background:rgba(20,18,14,.55); display:none; align-items:center; justify-content:center; z-index:1000; padding:16px;}
+  .modal-mask.open{display:flex; animation:fadeIn .18s ease-out;}
+  .modal{background:#fffdf7; border-radius:16px; max-width:560px; width:100%; padding:22px 22px 18px; box-shadow:0 24px 60px rgba(0,0,0,.25); position:relative; max-height:90vh; overflow:auto;}
+  .modal h2{margin:0 0 6px; font-size:19px; color:var(--ink);}
+  .modal .sub{font-size:13px; color:var(--sub); margin-bottom:14px;}
+  .qrgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:520px){ .qrgrid{grid-template-columns:1fr;} }
+  .qrcard{background:#faf6ec; border:1px solid var(--line); border-radius:12px; padding:12px; text-align:center;}
+  .qrcard img{width:100%; max-width:240px; aspect-ratio:1/1; object-fit:contain; border:1px solid #e7ddc6; border-radius:10px; background:#fff; display:block; margin:0 auto; cursor:zoom-in;}
+  .qrcard .name{margin-top:8px; font-size:14px; font-weight:700; color:var(--ink);}
+  .qrcard .hint{font-size:12px; color:var(--sub); margin-top:4px;}
+  .modal-close{position:absolute; right:14px; top:10px; width:32px; height:32px; border-radius:50%; border:none; background:transparent; font-size:20px; color:var(--sub); cursor:pointer;}
+  .modal-close:hover{background:#f3eede;}
+  .modal-foot{margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); font-size:12px; color:var(--sub); text-align:center;}
+  .donate-pill{background:linear-gradient(135deg,#ffd58a,#ffb04a); color:#5a3207; border:none; padding:6px 12px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(190,120,30,.25); transition:.15s;}
+  .donate-pill:hover{transform:translateY(-1px); box-shadow:0 4px 12px rgba(190,120,30,.35);}
+  @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
 </style>
 </head>
 <body>
@@ -135,6 +154,7 @@
       <button class="ghost" id="exportBtn">⬇️ 导出进度</button>
       <button class="ghost" id="importBtn">⬆️ 导入进度</button>
       <input type="file" id="importFile" accept=".json,application/json" hidden>
+      <button class="donate-pill" id="donateBtn" type="button" title="如果这个小工具对你有帮助，请我喝杯咖啡～">☕ 打赏</button>
       <label class="spk"><input type="checkbox" id="autoSpeak"> 🔊 自动朗读</label>
     </div>
     <div class="row">
@@ -198,6 +218,28 @@
 
   <div class="keys">
     快捷键：<kbd>←</kbd> 上一张 · <kbd>→</kbd> 下一张 · <kbd>空格</kbd> 翻面 · <kbd>S</kbd> 朗读 · <kbd>K</kbd> 认识 · <kbd>J</kbd> 不认识
+  </div>
+</div>
+
+<!-- 打赏弹窗 -->
+<div class="modal-mask" id="donateModal" role="dialog" aria-modal="true" aria-labelledby="donateTitle">
+  <div class="modal" role="document">
+    <button class="modal-close" id="donateClose" aria-label="关闭">✕</button>
+    <h2 id="donateTitle">☕ 如果这个小工具对你有帮助</h2>
+    <div class="sub">如果它让你的 N1 备考更轻松一点，欢迎请我喝杯咖啡～ <br>扫码即可，不需要金额大小，每一份都很感激。</div>
+    <div class="qrgrid">
+      <div class="qrcard">
+        <img src="donate/alipay.jpg" alt="支付宝收款码" id="qrAlipay">
+        <div class="name">支付宝</div>
+        <div class="hint">**雪 · 推荐使用支付宝扫码</div>
+      </div>
+      <div class="qrcard">
+        <img src="donate/wechat.jpg" alt="微信支付收款码" id="qrWechat">
+        <div class="name">微信支付</div>
+        <div class="hint">好想躺着 (**雪)</div>
+      </div>
+    </div>
+    <div class="modal-foot">二维码加载失败？检查 GitHub Pages 是否正常发布 <code>donate/</code> 目录（仓库根）。</div>
   </div>
 </div>
 
@@ -557,6 +599,15 @@ $('resetBtn').addEventListener('click', ()=>{ if(confirm('确定要清空所有�
 $('exportBtn').addEventListener('click', exportMarks);
 $('importBtn').addEventListener('click', ()=> $('importFile').click());
 $('importFile').addEventListener('change', e=>{ const f=e.target.files&&e.target.files[0]; if(f) importMarks(f); e.target.value=''; });
+
+// 打赏弹窗
+$('donateBtn').addEventListener('click', ()=>{ stopAudio(); $('donateModal').classList.add('open'); });
+$('donateClose').addEventListener('click', ()=> $('donateModal').classList.remove('open'));
+$('donateModal').addEventListener('click', e=>{ if(e.target.id==='donateModal') $('donateModal').classList.remove('open'); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') $('donateModal').classList.remove('open'); });
+// 点击二维码可新标签页全屏放大查看
+$('qrAlipay').addEventListener('click', ()=>window.open('donate/alipay.jpg','_blank'));
+$('qrWechat').addEventListener('click', ()=>window.open('donate/wechat.jpg','_blank'));
 
 // 视图切换：闪卡 / 列表
 $('viewCard').addEventListener('click', ()=> switchView('card'));
