@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日语1·2级语法 368 句 · 闪卡</title>
+<style>
+  :root{
+    --bg:#f5f1e8; --panel:#fffdf8; --ink:#2b2b2b; --sub:#7a736a;
+    --line:#e7e0d2; --accent:#b5432f; --accent2:#2f6f8f;
+    --ok:#2e8b57; --bad:#c0392b; --chip:#efe9dc;
+    --shadow:0 10px 30px rgba(60,45,30,.12);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"Hiragino Sans","Noto Sans JP","PingFang SC","Microsoft YaHei",sans-serif;
+    background:linear-gradient(160deg,#f7f3ea,#efe7d6); color:var(--ink); min-height:100vh;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:18px 16px 40px;}
+  header h1{font-size:20px; margin:4px 0 2px; letter-spacing:.5px;}
+  header p{margin:0 0 10px; color:var(--sub); font-size:13px;}
+  .stats{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .stat{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:6px 12px; font-size:13px; box-shadow:var(--shadow);}
+  .stat b{font-size:16px;}
+  .stat.ok b{color:var(--ok);} .stat.bad b{color:var(--bad);}
+  .toolbar{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px; box-shadow:var(--shadow); margin-bottom:16px;}
+  .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px;}
+  .row:last-child{margin-bottom:0;}
+  input[type=search],select{
+    font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--ink);
+  }
+  input[type=search]{flex:1; min-width:160px;}
+  button{font:inherit; cursor:pointer; border:none; border-radius:9px; padding:8px 14px; background:var(--chip); color:var(--ink); transition:.15s;}
+  button:hover{filter:brightness(.96);}
+  button.primary{background:var(--accent); color:#fff;}
+  button.ghost{background:transparent; border:1px solid var(--line);}
+  .scene{perspective:1400px; margin:6px 0 14px;}
+  .card{position:relative; width:100%; height:340px; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.4,.1,.2,1); cursor:pointer;}
+  .card.flipped{transform:rotateY(180deg);}
+  .card.mastered .face{box-shadow:0 0 0 3px #4caf6e, var(--shadow);}
+  .face{position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow);
+    display:flex; flex-direction:column; padding:20px; overflow:hidden;}
+  .back{transform:rotateY(180deg);}
+  .badges{display:flex; gap:6px; flex-wrap:wrap; font-size:12px;}
+  .badge{padding:3px 9px; border-radius:999px; background:var(--chip); color:var(--sub); border:1px solid var(--line);}
+  .badge.lv1{background:#fbe9e6; color:var(--bad); border-color:#f3c9c1;}
+  .badge.lv2{background:#e7f0f5; color:var(--accent2); border-color:#c6dce8;}
+  .badge.id{background:#f3eede; color:#8a7d5e;}
+  .badge.mastered{background:var(--ok); color:#fff; border-color:var(--ok); font-weight:700;}
+  .center{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px;}
+  .pattern{font-size:30px; font-weight:600; line-height:1.4; color:var(--ink);}
+  .meaning{font-size:17px; font-weight:600; color:var(--accent); line-height:1.5;}
+  .word{font-size:38px; font-weight:700; line-height:1.3; color:var(--ink);}
+  .conn{font-size:14px; color:var(--sub); background:#f7f2e6; border:1px dashed var(--line); border-radius:10px; padding:8px 12px; max-width:100%;}
+  .hint{font-size:12px; color:#a99e88; text-align:center;}
+  .foot{font-size:12px; color:var(--sub); margin-top:6px;}
+  .example{margin-top:8px; padding:10px 12px; background:#f1f7f3; border:1px solid #d4e6db; border-radius:10px; max-width:100%; text-align:left;}
+  .ex-label{font-size:11px; color:#7fae93; letter-spacing:2px; margin-bottom:3px;}
+  .ex-jp{font-size:24px; color:var(--ink); font-weight:600; line-height:1.6;}
+  .ex-jp mark{background:#ffd76e; color:#5a3a00; border-radius:3px; padding:0 2px; font-weight:700;}
+  .ex-cn{font-size:13px; color:var(--sub); margin-top:4px; line-height:1.5;}
+  .ex-tag{display:inline-block; font-size:10px; color:#fff; background:#7fae93; border-radius:4px; padding:1px 5px; margin-left:6px; vertical-align:middle;}
+  .nav{display:flex; gap:8px; align-items:center; justify-content:center; margin-bottom:12px; flex-wrap:wrap;}
+  .nav .pos{font-size:13px; color:var(--sub); min-width:64px; text-align:center;}
+  .markrow{display:flex; gap:10px; justify-content:center; margin-bottom:8px;}
+  .markrow button{flex:1; max-width:200px; padding:13px; font-size:15px; font-weight:600;}
+  .mk-bad{background:#fbe9e6; color:var(--bad); border:1px solid #f0c4bc;}
+  .mk-ok{background:#e6f4ec; color:var(--ok); border:1px solid #b9e0c8;}
+  .markrow button.active{box-shadow:0 0 0 3px rgba(43,43,43,.18) inset; font-weight:700;}
+  .keys{font-size:12px; color:#a99e88; text-align:center; line-height:1.7;}
+  .spk{display:inline-flex; align-items:center; gap:5px; font-size:13px; color:var(--sub); cursor:pointer; user-select:none;}
+  .spk input{accent-color:var(--accent);}
+  kbd{background:#fff; border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:1px 6px; font-size:11px; color:var(--ink);}
+  .empty{text-align:center; color:var(--sub); padding:40px 0;}
+  .bar{height:8px; background:var(--chip); border-radius:999px; overflow:hidden; margin-top:4px;}
+  .bar > i{display:block; height:100%; background:linear-gradient(90deg,var(--ok),#7fc99a); width:0; transition:width .3s;}
+  .fgroup{position:relative; display:inline-block;}
+  .fgroup > summary{list-style:none; cursor:pointer; padding:7px 12px; border:1px solid var(--line); border-radius:9px; background:var(--chip); font-size:13px; user-select:none; color:var(--ink);}
+  .fgroup > summary::-webkit-details-marker{display:none;}
+  .fgroup > summary::after{content:'▾'; margin-left:6px; opacity:.55; font-size:11px;}
+  .fgroup[open] > summary::after{content:'▴';}
+  .fgroup .checks{position:absolute; z-index:30; top:calc(100% + 6px); left:0; min-width:170px; max-height:320px; overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); display:flex; flex-direction:column; gap:7px;}
+  .fgroup .chk{display:flex; align-items:center; gap:8px; font-size:13px; white-space:nowrap; cursor:pointer; color:var(--ink);}
+  .fgroup .chk input{accent-color:var(--accent); width:15px; height:15px;}
+  .viewswitch{display:flex; gap:8px; margin-bottom:12px;}
+  .viewswitch button{flex:1; padding:10px; font-size:15px; font-weight:600;}
+  .listtabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
+  .listtabs button{padding:6px 12px; font-size:13px;}
+  .listtabs button.active{background:var(--accent); color:#fff;}
+  .lcount{font-size:12px; color:var(--sub); margin-bottom:8px;}
+  .list{display:flex; flex-direction:column; gap:8px;}
+  .litem{display:flex; align-items:center; gap:12px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; box-shadow:var(--shadow); transition:.15s;}
+  .litem:hover{border-color:var(--accent);}
+  .litem .dot{width:9px; height:9px; border-radius:50%; flex:none;}
+  .litem .dot.known{background:var(--ok);}
+  .litem .dot.unknown{background:var(--bad);}
+  .litem .dot.new{background:#c9c2b4;}
+  .litem .lp{font-size:19px; font-weight:700; color:var(--ink); flex:none; max-width:46%;}
+  .litem .lm{flex:1; font-size:14px; color:var(--sub); text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+  /* 打赏弹窗 */
+  .modal-mask{position:fixed; inset:0; background:rgba(20,18,14,.55); display:none; align-items:center; justify-content:center; z-index:1000; padding:16px;}
+  .modal-mask.open{display:flex; animation:fadeIn .18s ease-out;}
+  .modal{background:#fffdf7; border-radius:16px; max-width:560px; width:100%; padding:22px 22px 18px; box-shadow:0 24px 60px rgba(0,0,0,.25); position:relative; max-height:90vh; overflow:auto;}
+  .modal h2{margin:0 0 6px; font-size:19px; color:var(--ink);}
+  .modal .sub{font-size:13px; color:var(--sub); margin-bottom:14px;}
+  .qrgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:520px){ .qrgrid{grid-template-columns:1fr;} }
+  .qrcard{background:#faf6ec; border:1px solid var(--line); border-radius:12px; padding:12px; text-align:center;}
+  .qrcard img{width:100%; max-width:240px; aspect-ratio:1/1; object-fit:contain; border:1px solid #e7ddc6; border-radius:10px; background:#fff; display:block; margin:0 auto; cursor:zoom-in;}
+  .qrcard .name{margin-top:8px; font-size:14px; font-weight:700; color:var(--ink);}
+  .qrcard .hint{font-size:12px; color:var(--sub); margin-top:4px;}
+  .modal-close{position:absolute; right:14px; top:10px; width:32px; height:32px; border-radius:50%; border:none; background:transparent; font-size:20px; color:var(--sub); cursor:pointer;}
+  .modal-close:hover{background:#f3eede;}
+  .modal-foot{margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); font-size:12px; color:var(--sub); text-align:center;}
+  .donate-pill{background:linear-gradient(135deg,#ffd58a,#ffb04a); color:#5a3207; border:none; padding:6px 12px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(190,120,30,.25); transition:.15s;}
+  .donate-pill:hover{transform:translateY(-1px); box-shadow:0 4px 12px rgba(190,120,30,.35);}
+  @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📘 日语 1·2 级语法 368 句 · 闪卡</h1>
+    <p>正面例句记句型（语法词已高亮），翻面看单词与释义，标记掌握情况即可自动复习。</p>
+  </header>
+
+  <div class="stats">
+      <div class="stat ok">认识 <b id="sOk">0</b></div>
+      <div class="stat bad">不认识 <b id="sBad">0</b></div>
+      <div class="stat">未学 <b id="sNew">368</b></div>
+      <div class="stat">完成度 <b id="sPct">0%</b></div>
+  </div>
+  <div class="bar"><i id="bar"></i></div>
+
+  <div class="toolbar">
+    <div class="row">
+      <input type="search" id="search" placeholder="搜索句型或释义…" autocomplete="off">
+      <details class="fgroup" id="lvGrp"><summary id="lvSum">级别：全部</summary><div class="checks" id="lvChecks"></div></details>
+      <details class="fgroup" id="catGrp"><summary id="catSum">分类：全部</summary><div class="checks" id="catChecks"></div></details>
+      <details class="fgroup" id="unitGrp"><summary id="unitSum">单元：全部</summary><div class="checks" id="unitChecks"></div></details>
+      <button class="ghost" id="clearFilters" type="button">✕ 清空筛选</button>
+    </div>
+    <div class="row">
+      <select id="mode">
+        <option value="all">模式：全部</option>
+        <option value="unmastered">模式：复习（未掌握）</option>
+        <option value="mastered">模式：仅已掌握</option>
+        <option value="shuffle">模式：随机</option>
+      </select>
+      <button class="ghost" id="shuffleBtn">🔀 打乱顺序</button>
+      <button class="ghost" id="resetBtn">↺ 重置进度</button>
+      <button class="ghost" id="exportBtn">⬇️ 导出进度</button>
+      <button class="ghost" id="importBtn">⬆️ 导入进度</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+      <button class="donate-pill" id="donateBtn" type="button" title="如果这个小工具对你有帮助，请我喝杯咖啡～">☕ 打赏</button>
+      <label class="spk"><input type="checkbox" id="autoSpeak"> 🔊 自动朗读</label>
+    </div>
+    <div class="row">
+      <label class="spk">🔊 仅本地自然语音（微软 Nanami 真人级，离线可用）</label>
+    </div>
+  </div>
+
+  <div class="viewswitch">
+    <button id="viewCard" class="primary" type="button">🃏 闪卡</button>
+    <button id="viewList" class="ghost" type="button">📋 列表</button>
+  </div>
+
+  <div class="scene" id="sceneCard">
+    <div class="empty" id="emptyMsg" style="display:none;">没有符合条件的卡片，试试调整筛选或重置进度。</div>
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="badges" id="fBadges"></div>
+        <div class="center">
+          <div class="ex-jp" id="fExJp"></div>
+          <div class="ex-cn" id="fExCn"></div>
+          <div class="conn" id="fPatternHint"></div>
+        </div>
+        <div class="hint">点击卡片 / 按 <kbd>空格</kbd> 翻面看语法点（句型·释义·接続）</div>
+      </div>
+      <div class="face back">
+        <div class="badges" id="bBadges"></div>
+        <div class="center">
+          <div class="word" id="bWord"></div>
+          <div class="meaning" id="bMeaning"></div>
+          <div class="conn" id="bConn"></div>
+          <div class="foot" id="bPatternFoot"></div>
+        </div>
+        <div class="hint">点击 <b>认识</b>（=已掌握）或 <b>不认识</b> 记录掌握情况 · <kbd>S</kbd> 朗读单词</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sceneList" style="display:none;">
+    <div class="listtabs" id="listTabs">
+      <button data-s="all" class="active" type="button">全部</button>
+      <button data-s="known" type="button">认识</button>
+      <button data-s="unknown" type="button">不认识</button>
+      <button data-s="new" type="button">未学</button>
+    </div>
+    <div class="lcount" id="listCount"></div>
+    <div class="list" id="listContainer"></div>
+  </div>
+
+  <div class="markrow">
+    <button class="mk-bad" id="btnBad">✗ 不认识</button>
+    <button class="mk-ok" id="btnOk">✓ 认识</button>
+  </div>
+
+  <div class="nav">
+    <button id="prevBtn">‹ 上一张</button>
+    <button id="speakBtn" class="ghost" title="朗读句型（S）">🔊</button>
+    <span class="pos" id="pos">0 / 0</span>
+    <button id="flipBtn" class="primary">翻面</button>
+    <button id="nextBtn">下一张 ›</button>
+  </div>
+
+  <div class="keys">
+    快捷键：<kbd>←</kbd> 上一张 · <kbd>→</kbd> 下一张 · <kbd>空格</kbd> 翻面 · <kbd>S</kbd> 朗读 · <kbd>K</kbd> 认识 · <kbd>J</kbd> 不认识
+  </div>
+</div>
+
+<!-- 打赏弹窗 -->
+<div class="modal-mask" id="donateModal" role="dialog" aria-modal="true" aria-labelledby="donateTitle">
+  <div class="modal" role="document">
+    <button class="modal-close" id="donateClose" aria-label="关闭">✕</button>
+    <h2 id="donateTitle">☕ 如果这个小工具对你有帮助</h2>
+    <div class="sub">如果它让你的 N1 备考更轻松一点，欢迎请我喝杯咖啡～ <br>扫码即可，不需要金额大小，每一份都很感激。</div>
+    <div class="qrgrid">
+      <div class="qrcard">
+        <img src="donate/alipay.jpg" alt="支付宝收款码" id="qrAlipay">
+        <div class="name">支付宝</div>
+        <div class="hint">**雪 · 推荐使用支付宝扫码</div>
+      </div>
+      <div class="qrcard">
+        <img src="donate/wechat.jpg" alt="微信支付收款码" id="qrWechat">
+        <div class="name">微信支付</div>
+        <div class="hint">好想躺着 (**雪)</div>
+      </div>
+    </div>
+    <div class="modal-foot">二维码加载失败？检查 GitHub Pages 是否正常发布 <code>donate/</code> 目录（仓库根）。</div>
+  </div>
+</div>
+
+<script>
+const DATA = [{"id": 1, "unit": "1目的•原因•理由", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ベく（文言文）", "meaning": "为了", "level": "1级", "category": "目的", "conn": "动词·原形", "ex_jp": "彼は国へ帰るべく、旅に出た。", "ex_cn": "他为了回国而踏上了旅途。"}, {"id": 2, "unit": "1目的•原因•理由", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "んがため（に）/んがための", "meaning": "为了…而…", "level": "1级", "category": "目的", "conn": "动词·ない形", "ex_jp": "彼は家族に会わんがため、長い旅を続けた。", "ex_cn": "他为了与家人相见，继续着漫长的旅程。"}, {"id": 3, "unit": "1目的•原因•理由", "noun": "の形", "na": "な形", "i": "原形", "verb": "原形", "pattern": "あまり/のあまり/あまりの…に", "meaning": "由于太过，实在太", "level": "2级", "category": "原因•理由", "conn": "名词·の形 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "嬉しさのあまり、泣いてしまった。", "ex_cn": "因为太高兴，哭了出来。"}, {"id": 4, "unit": "1目的•原因•理由", "noun": "である", "na": "", "i": "", "verb": "原形", "pattern": "以上（は）", "meaning": "既然…就要…", "level": "2级", "category": "原因•理由", "conn": "名词·である ／ 动词·原形", "ex_jp": "学生である以上、勉強するべきだ。", "ex_cn": "既然是学生，就应该学习。"}, {"id": 5, "unit": "1目的•原因•理由", "noun": "の形", "na": "な/だった形", "i": "原形", "verb": "た形", "pattern": "おかげで", "meaning": "幸亏，多亏，亏…的福", "level": "2级", "category": "原因•理由", "conn": "名词·の形 ／ ナ形·な/だった形 ／ イ形·原形 ／ 动词·た形", "ex_jp": "薬を飲んだおかげで、元気になった。", "ex_cn": "多亏吃了药，恢复了精神。"}, {"id": 6, "unit": "1目的•原因•理由", "noun": "の形", "na": "な/だった形", "i": "原形", "verb": "た形", "pattern": "おかげだ", "meaning": "多亏，因为", "level": "2级", "category": "原因•理由", "conn": "名词·の形 ／ ナ形·な/だった形 ／ イ形·原形 ／ 动词·た形", "ex_jp": "試験に合格したのは、先生のおかげだ。", "ex_cn": "考试合格，多亏了老师。"}, {"id": 7, "unit": "1目的•原因•理由", "noun": "である", "na": "", "i": "", "verb": "原形", "pattern": "からには/からは", "meaning": "既然…就，既然…当然", "level": "2级", "category": "原因•理由", "conn": "名词·である ／ 动词·原形", "ex_jp": "約束したからには、守らなければならない。", "ex_cn": "既然约定了，就必须遵守。"}, {"id": 8, "unit": "1目的•原因•理由", "noun": "の形", "na": "な形", "i": "原形", "verb": "原形", "pattern": "せいか", "meaning": "或许是，…的缘故吧", "level": "2级", "category": "原因•理由", "conn": "名词·の形 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "徹夜したせいか、頭が痛い。", "ex_cn": "或许是熬夜的缘故，头很疼。"}, {"id": 9, "unit": "1目的•原因•理由", "noun": "の形", "na": "な形", "i": "原形", "verb": "原形", "pattern": "せいで", "meaning": "因为，归咎于…", "level": "2级", "category": "原因•理由", "conn": "名词·の形 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "睡眠不足のせいで、眠い。", "ex_cn": "因为睡眠不足，很困。"}, {"id": 10, "unit": "1目的•原因•理由", "noun": "の形", "na": "な形", "i": "原形", "verb": "原形", "pattern": "せいだ", "meaning": "是因为", "level": "2级", "category": "原因•理由", "conn": "名词·の形 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "試合に負けたのは、練習不足のせいだ。", "ex_cn": "比赛输掉是因为练习不足。"}, {"id": 11, "unit": "1目的•原因•理由", "noun": "词干", "na": "な形", "i": "原形", "verb": "原形", "pattern": "だけに/だけあって", "meaning": "不愧是，正因为是", "level": "2级", "category": "原因•理由", "conn": "名词·词干 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼はプロだけに、腕がいい。", "ex_cn": "他不愧是专业选手，技术很好。"}, {"id": 12, "unit": "1目的•原因•理由", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "による", "meaning": "由于，因为", "level": "2级", "category": "原因•理由", "conn": "名词·词干", "ex_jp": "大雨による事故が多い。", "ex_cn": "由于大雨引发的事故很多。"}, {"id": 13, "unit": "1目的•原因•理由", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "だけのことはある", "meaning": "值得，不愧是，没有白费", "level": "2级", "category": "原因•理由", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "この店は人気があるだけのことはある。", "ex_cn": "这家店不愧有人气（值得一去）。"}, {"id": 14, "unit": "1目的•原因•理由", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "によって", "meaning": "由于，因为", "level": "2级", "category": "原因•理由", "conn": "名词·词干", "ex_jp": "台風によって、電車が止まった。", "ex_cn": "由于台风，电车停运了。"}, {"id": 15, "unit": "1目的•原因•理由", "noun": "である", "na": "", "i": "原形", "verb": "た形", "pattern": "ばかりに", "meaning": "就是因为，只因", "level": "2级", "category": "原因•理由", "conn": "名词·である ／ イ形·原形 ／ 动词·た形", "ex_jp": "急いだばかりに、財布を忘れた。", "ex_cn": "就因为着急，把钱包忘了。"}, {"id": 16, "unit": "1目的•原因•理由", "noun": "词干", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ものだから/もので", "meaning": "因为…所以…", "level": "2级", "category": "原因•理由", "conn": "名词·词干 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "道が込むものだから、遅れた。", "ex_cn": "因为堵车，所以迟到了。"}, {"id": 17, "unit": "1目的•原因•理由", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "につき", "meaning": "因，由于", "level": "2级", "category": "原因•理由", "conn": "名词·词干", "ex_jp": "改装中につき、休業します。", "ex_cn": "因装修，暂停营业。"}, {"id": 18, "unit": "1目的•原因•理由", "noun": "である", "na": "である", "i": "", "verb": "原形", "pattern": "がゆえ（に）", "meaning": "由于", "level": "1级", "category": "原因•理由", "conn": "名词·である ／ ナ形·である ／ 动词·原形", "ex_jp": "彼は初心者であるがゆえに、慎重だ。", "ex_cn": "他因为是初学者，所以很谨慎。"}, {"id": 19, "unit": "1目的•原因•理由", "noun": "の形", "na": "", "i": "原形", "verb": "原形", "pattern": "こととて", "meaning": "因为，由于", "level": "1级", "category": "原因•理由", "conn": "名词·の形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "新人のこととて、失敗もある。", "ex_cn": "因为是新手，也有失败的时候。"}, {"id": 20, "unit": "1目的•原因•理由", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "とあって", "meaning": "因为，由于", "level": "1级", "category": "原因•理由", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "休日とあって、道が混んでいる。", "ex_cn": "因为是休息日，路上很拥挤。"}, {"id": 21, "unit": "1目的•原因•理由", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "まで（のこと）だ", "meaning": "只不过是，只是…而已", "level": "1级", "category": "原因•理由", "conn": "动词·原形", "ex_jp": "失敗しても、やり直すまでのことだ。", "ex_cn": "即使失败，也不过是重来而已。"}, {"id": 22, "unit": "1目的•原因•理由", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をもって", "meaning": "因，以", "level": "1级", "category": "原因•理由", "conn": "名词·词干", "ex_jp": "当店は今月をもって閉店します。", "ex_cn": "本店以本月为止停业。"}, {"id": 23, "unit": "1目的•原因•理由", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "ではあるまいし/じやあるまいし/でもあるまいし", "meaning": "又不是（可省成じあ）", "level": "1级", "category": "原因•理由", "conn": "名词·词干", "ex_jp": "子供ではあるまいし、自分でやりなさい。", "ex_cn": "又不是小孩子，自己做吧。"}, {"id": 24, "unit": "1目的•原因•理由", "noun": "词干/の形", "na": "", "i": "原形", "verb": "原形", "pattern": "ゆえ（に）", "meaning": "由于，因为…而", "level": "1级", "category": "原因•理由", "conn": "名词·词干/の形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼は天才ゆえに、羨まれる。", "ex_cn": "他因为是天才而被人羡慕。"}, {"id": 25, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "た形", "pattern": "かと思うと/かと思ったら", "meaning": "刚…就，以为是…却", "level": "2级", "category": "时间的同时性", "conn": "动词·た形", "ex_jp": "雷が鳴ったかと思うと、雨が降り出した。", "ex_cn": "刚一打雷，就下起了雨。"}, {"id": 26, "unit": "2时间的同时性•时间的前后关系", "noun": "サ词干", "na": "", "i": "", "verb": "ます形", "pattern": "次第", "meaning": "一…就…", "level": "2级", "category": "时间的同时性", "conn": "名词·サ词干 ／ 动词·ます形", "ex_jp": "雨が止み次第、出発します。", "ex_cn": "雨一停就出发。"}, {"id": 27, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "た形", "pattern": "たとたん（に）", "meaning": "刚…就…", "level": "2级", "category": "时间的同时性", "conn": "动词·た形", "ex_jp": "家を出たとたん、雨が降ってきた。", "ex_cn": "刚出门，就下起了雨。"}, {"id": 28, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "つつ（同时进行）", "meaning": "一边…一边，一面…一面", "level": "2级", "category": "时间的同时性", "conn": "动词·ます形", "ex_jp": "テレビを見つつ、ご飯を食べる。", "ex_cn": "一边看电视，一边吃饭。"}, {"id": 29, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "ながら（后为主事项）", "meaning": "一边…一边，一面…一面", "level": "2级", "category": "时间的同时性", "conn": "动词·ます形", "ex_jp": "音楽を聞きながら、散歩した。", "ex_cn": "一边听音乐，一边散步。"}, {"id": 30, "unit": "2时间的同时性•时间的前后关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "かたがた（有动机）", "meaning": "顺便，兼", "level": "1级", "category": "时间的同时性", "conn": "名词·词干", "ex_jp": "散歩かたがた、郵便局に行く。", "ex_cn": "顺便散步去邮局。"}, {"id": 31, "unit": "2时间的同时性•时间的前后关系", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "かたわら", "meaning": "…的同时也", "level": "1级", "category": "时间的同时性", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "彼は会社員のかたわら、小説を書いている。", "ex_cn": "他作为公司职员，同时也写小说。"}, {"id": 32, "unit": "2时间的同时性•时间的前后关系", "noun": "词干", "na": "", "i": "", "verb": "ます形", "pattern": "がてら（利用机会）", "meaning": "顺便，同时", "level": "1级", "category": "时间的同时性", "conn": "名词·词干 ／ 动词·ます形", "ex_jp": "買い物がてら、友達に会った。", "ex_cn": "顺便买东西时见了朋友。"}, {"id": 33, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "がはやいか", "meaning": "刚…就，一…就", "level": "1级", "category": "时间的同时性", "conn": "动词·原形", "ex_jp": "ベルが鳴るがはやいか、教室を飛び出した。", "ex_cn": "铃声一响，就冲出了教室。"}, {"id": 34, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "そばから", "meaning": "刚…就", "level": "1级", "category": "时间的同时性", "conn": "动词·原形", "ex_jp": "覚えたそばから、忘れてしまう。", "ex_cn": "刚记住就忘了。"}, {"id": 35, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "なり", "meaning": "刚…就", "level": "1级", "category": "时间的同时性", "conn": "动词·原形", "ex_jp": "家に帰るなり、寝てしまった。", "ex_cn": "刚回到家就睡着了。"}, {"id": 36, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "やいなや（矢否や）", "meaning": "刚…就（书面语）", "level": "1级", "category": "时间的同时性", "conn": "动词·原形", "ex_jp": "ドアを開くやいなや、犬が飛び出した。", "ex_cn": "门一开，狗就冲了出来。"}, {"id": 37, "unit": "2时间的同时性•时间的前后关系", "noun": "词干", "na": "", "i": "", "verb": "た形", "pattern": "上で/上の", "meaning": "在…之后，以后", "level": "2级", "category": "时间的前后关系", "conn": "名词·词干 ／ 动词·た形", "ex_jp": "よく考えた上で、返事する。", "ex_cn": "考虑好之后再回复。"}, {"id": 38, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "て形", "pattern": "て以来 （书面语）", "meaning": "自从…以来", "level": "2级", "category": "时间的前后关系", "conn": "动词·て形", "ex_jp": "日本に来て以来、寿司ばかり食べている。", "ex_cn": "来日本以后，只吃寿司。"}, {"id": 39, "unit": "2时间的同时性•时间的前后关系", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にさきだち/にさきだって", "meaning": "在…之前", "level": "2级", "category": "时间的前后关系", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "出発に先立ち、挨拶をする。", "ex_cn": "在出发之前致辞。"}, {"id": 40, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "て形", "pattern": "てはじめて", "meaning": "…以后才，只有…才", "level": "2级", "category": "时间的前后关系", "conn": "动词·て形", "ex_jp": "自分でやってはじめて、難しさが分かった。", "ex_cn": "自己做了以后，才明白困难。"}, {"id": 41, "unit": "2时间的同时性•时间的前后关系", "noun": "", "na": "", "i": "", "verb": "て形", "pattern": "てからというもの", "meaning": "自从…以后", "level": "1级", "category": "时间的前后关系", "conn": "动词·て形", "ex_jp": "彼が来てからというもの、雰囲気が変わった。", "ex_cn": "自从他来了之后，气氛变了。"}, {"id": 42, "unit": "3标准", "noun": "词干", "na": "", "i": "", "verb": "原形/ます形", "pattern": "とおり/どおり（动原不变ど）", "meaning": "按照，如，正像…那样", "level": "2级", "category": "标准", "conn": "名词·词干 ／ 动词·原形/ます形", "ex_jp": "予定どおりに進んでいる。", "ex_cn": "正按计划进行。"}, {"id": 43, "unit": "3标准", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "に基づいて/に基づく/に基づいた", "meaning": "基于，在…基础上", "level": "2级", "category": "标准", "conn": "名词·词干", "ex_jp": "法律に基づいて、判断した。", "ex_cn": "基于法律做了判断。"}, {"id": 44, "unit": "3标准", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "のもとで/のもとに", "meaning": "在…下，按照", "level": "2级", "category": "标准", "conn": "名词·词干", "ex_jp": "先生のもとで、研究した。", "ex_cn": "在老师的指导下进行了研究。"}, {"id": 45, "unit": "3标准", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "ように/ような", "meaning": "像，如", "level": "2级", "category": "标准", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "彼は魚のように泳ぐ。", "ex_cn": "他像鱼一样游泳。"}, {"id": 46, "unit": "3标准", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "を中心にする/を中心にした/を中心に (して）/を中心として/を中心とする", "meaning": "以…为中心", "level": "2级", "category": "标准", "conn": "名词·词干", "ex_jp": "駅を中心に、店が集まっている。", "ex_cn": "以车站为中心，聚集着店铺。"}, {"id": 47, "unit": "3标准", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にそう/にそって/にそった", "meaning": "沿着，顺着，按照", "level": "2级", "category": "标准", "conn": "名词·词干", "ex_jp": "川に沿って、歩いた。", "ex_cn": "沿着河走了。"}, {"id": 48, "unit": "3标准", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "に即して", "meaning": "根据，结合，适应", "level": "1级", "category": "标准", "conn": "名词·词干", "ex_jp": "現実に即して、考える。", "ex_cn": "结合现实来思考。"}, {"id": 49, "unit": "3标准", "noun": "の形/词干", "na": "", "i": "", "verb": "原形", "pattern": "ごとく/ごとき", "meaning": "和…一样", "level": "1级", "category": "标准", "conn": "名词·の形/词干 ／ 动词·原形", "ex_jp": "風のごとく、走った。", "ex_cn": "像风一样奔跑。"}, {"id": 50, "unit": "4推测•传闻•无视•无关", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "おそれがある", "meaning": "可能会，有可能", "level": "2级", "category": "推测", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "大雨で洪水のおそれがある。", "ex_cn": "大雨有可能引发洪水。"}, {"id": 51, "unit": "4推测•传闻•无视•无关", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "かねない", "meaning": "说不定，有可能", "level": "2级", "category": "推测", "conn": "动词·ます形", "ex_jp": "そんなことを言えば、彼を怒らせかねない。", "ex_cn": "说那种话，可能会惹怒他。"}, {"id": 52, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "と見えて/と見える", "meaning": "看上去，看来", "level": "2级", "category": "推测", "conn": "名词·词干 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼は先生と見える。", "ex_cn": "他看上去像位老师。"}, {"id": 53, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "にきまっている", "meaning": "一定，肯定", "level": "2级", "category": "推测", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "あの店はおいしいにきまっている。", "ex_cn": "那家店肯定好吃。"}, {"id": 54, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "原形", "verb": "原形", "pattern": "に相違ない", "meaning": "一定，肯定", "level": "2级", "category": "推测", "conn": "名词·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼は知っているに相違ない。", "ex_cn": "他肯定知道。"}, {"id": 55, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "に違いない", "meaning": "一定，肯定，准是", "level": "2级", "category": "推测", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼が犯人に違いない。", "ex_cn": "他一定是犯人。"}, {"id": 56, "unit": "4推测•传闻•无视•无关", "noun": "", "na": "", "i": "", "verb": "まい形", "pattern": "まい（书面语)", "meaning": "不会", "level": "2级", "category": "推测", "conn": "动词·まい形", "ex_jp": "彼はもう来るまい。", "ex_cn": "他大概不会来了吧。"}, {"id": 57, "unit": "4推测•传闻•无视•无关", "noun": "な形", "na": "な形", "i": "原形", "verb": "原形", "pattern": "のでわあるまいか", "meaning": "不是…吗？难道不是…吗？", "level": "2级", "category": "推测", "conn": "名词·な形 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼は本当に知らないのでわあるまいか。", "ex_cn": "难道他不是真的不知道吗？"}, {"id": 58, "unit": "4推测•传闻•无视•无关", "noun": "だ形", "na": "词干", "i": "原形", "verb": "原形", "pattern": "ということだ", "meaning": "听说，据说", "level": "2级", "category": "传闻", "conn": "名词·だ形 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "明日は雨だということだ。", "ex_cn": "听说明天会下雨。"}, {"id": 59, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "とか/とかで", "meaning": "听说", "level": "2级", "category": "传闻", "conn": "名词·词干 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼は忙しいとかで、来なかった。", "ex_cn": "听说他很忙，所以没来。"}, {"id": 60, "unit": "4推测•传闻•无视•无关", "noun": "だ形", "na": "", "i": "", "verb": "原形", "pattern": "とのこと（だ）", "meaning": "听说，据说（只可肯定）", "level": "2级", "category": "传闻", "conn": "名词·だ形 ／ 动词·原形", "ex_jp": "明日休みだとのことだ。", "ex_cn": "听说明天休息。"}, {"id": 61, "unit": "4推测•传闻•无视•无关", "noun": "", "na": "", "i": "原形", "verb": "原形", "pattern": "由（よし）", "meaning": "听说", "level": "1级", "category": "传闻", "conn": "イ形·原形 ／ 动词·原形", "ex_jp": "明日晴れるよし、準備をする。", "ex_cn": "据说明天放晴，于是做准备。"}, {"id": 62, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "原形", "verb": "原形", "pattern": "にかかわらず", "meaning": "不论，无论", "level": "2级", "category": "无视•无关", "conn": "名词·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "天候にかかわらず、開催する。", "ex_cn": "不论天气如何都举办。"}, {"id": 63, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をとわず", "meaning": "不论，不分，不管", "level": "2级", "category": "无视•无关", "conn": "名词·词干", "ex_jp": "年齢を問わず、応募できる。", "ex_cn": "不论年龄都能报名。"}, {"id": 64, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "は別として/に別にして", "meaning": "除了", "level": "2级", "category": "无视•无关", "conn": "名词·词干", "ex_jp": "費用は別として、行きたい。", "ex_cn": "费用另当别论，但我想去。"}, {"id": 65, "unit": "4推测•传闻•无视•无关", "noun": "", "na": "词干", "i": "短句", "verb": "短句", "pattern": "かどうかは別として/ かは別として", "meaning": "另当别论，不论", "level": "2级", "category": "无视•无关", "conn": "ナ形·词干 ／ イ形·短句 ／ 动词·短句", "ex_jp": "難しいかどうかは別として、挑戦する。", "ex_cn": "难不难暂且不论，总之要挑战。"}, {"id": 66, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "の形", "verb": "の形", "pattern": "もかまわず", "meaning": "不顾，不在乎", "level": "2级", "category": "无视•无关", "conn": "名词·词干 ／ イ形·の形 ／ 动词·の形", "ex_jp": "雨もかまわず、出かけた。", "ex_cn": "不顾下雨出门了。"}, {"id": 67, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "はともかく（として）", "meaning": "暂且不管，姑且不论", "level": "2级", "category": "无视•无关", "conn": "名词·词干", "ex_jp": "結果はともかく、努力はした。", "ex_cn": "结果暂且不论，至少努力了。"}, {"id": 68, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "によらず", "meaning": "不拘，不以", "level": "2级", "category": "无视•无关", "conn": "名词·词干", "ex_jp": "経験によらず、採用する。", "ex_cn": "不拘经验，予以录用。"}, {"id": 69, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "はさておき/はさておいて", "meaning": "暂且不提，暂时放下", "level": "2级", "category": "无视•无关", "conn": "名词·词干", "ex_jp": "詳しい話はさておき、まず乾杯！", "ex_cn": "详细的话暂且不提，先干杯！"}, {"id": 70, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をよそに", "meaning": "不顾，无视", "level": "1级", "category": "无视•无关", "conn": "名词·词干", "ex_jp": "親の心配をよそに、彼は旅に出た。", "ex_cn": "不顾父母的担心，他出门旅行了。"}, {"id": 71, "unit": "4推测•传闻•无视•无关", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をものともせず（に）", "meaning": "不顾，不怕", "level": "1级", "category": "无视•无关", "conn": "名词·词干", "ex_jp": "困難をものともせず、進んだ。", "ex_cn": "不顾困难，前进了。"}, {"id": 72, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "次第で/次第だ", "meaning": "取决于，要看，全凭", "level": "2级", "category": "相应•相称", "conn": "名词·词干", "ex_jp": "天気次第で、予定が変わる。", "ex_cn": "计划取决于天气。"}, {"id": 73, "unit": "5关联•相应•相称•相关关系", "noun": "の形", "na": "", "i": "", "verb": "原形まい＋が", "pattern": "かいがある/がいがある", "meaning": "有效果，有价值等", "level": "2级", "category": "相应•相称", "conn": "名词·の形 ／ 动词·原形まい＋が", "ex_jp": "治療の甲斐があった。", "ex_cn": "治疗有了效果。"}, {"id": 74, "unit": "5关联•相应•相称•相关关系", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "たび（に）", "meaning": "每次，每逢", "level": "2级", "category": "相应•相称", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "試験のたびに、緊張する。", "ex_cn": "每次考试都会紧张。"}, {"id": 75, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "におうじて/におうじた 5にかけて（は）", "meaning": "按照，依据", "level": "2级", "category": "相应•相称", "conn": "名词·词干", "ex_jp": "収入に応じて、支出を決める。", "ex_cn": "根据收入决定支出。"}, {"id": 76, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にかんして/にかんする", "meaning": "关于，有关", "level": "2级", "category": "相应•相称", "conn": "名词·词干", "ex_jp": "環境にかんして、議論した。", "ex_cn": "关于环境进行了讨论。"}, {"id": 77, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にこたえて（书面语）", "meaning": "应，响应", "level": "2级", "category": "相应•相称", "conn": "名词·词干", "ex_jp": "期待にこたえて、頑張る。", "ex_cn": "响应期待而努力。"}, {"id": 78, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "につけ", "meaning": "每当…就，一…就", "level": "2级", "category": "相应•相称", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "春が来るにつけ、心が躍る。", "ex_cn": "每当春天来临，就心情雀跃。"}, {"id": 79, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をけいきとして/をけいきに（して）", "meaning": "以…为契机，自从", "level": "2级", "category": "相应•相称", "conn": "名词·词干", "ex_jp": "留学を契機として、日本語を学んだ。", "ex_cn": "以留学为契机学习了日语。"}, {"id": 80, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をきっかけとして/をきっかけに（して）", "meaning": "以…为转折，借…机会", "level": "2级", "category": "相应•相称", "conn": "名词·词干", "ex_jp": "出会いをきっかけに、付き合い始めた。", "ex_cn": "以相遇为契机开始交往。"}, {"id": 81, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "ごとに（数量词）", "meaning": "每，每次，各个，逐个", "level": "2级", "category": "相应•相称", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "一歩ごとに、景色が変わる。", "ex_cn": "每走一步，景色都不同。"}, {"id": 82, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "に似合わず", "meaning": "…不相称/不同", "level": "2级", "category": "相应•相称", "conn": "名词·词干", "ex_jp": "彼は年齢に似合わず、元気だ。", "ex_cn": "他与年龄不符，很有精神。"}, {"id": 83, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "いかんで/いかんだ", "meaning": "全凭，要看", "level": "1级", "category": "相应•相称", "conn": "名词·词干", "ex_jp": "国力いかんで、援助額が決まる。", "ex_cn": "援助金额全凭国力决定。"}, {"id": 84, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "とともに（同时发生）", "meaning": "伴随着…也，同时…也", "level": "2级", "category": "相关关系", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "年をとるとともに、体力が落ちる。", "ex_cn": "随着年龄增长，体力下降。"}, {"id": 85, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にしたがって（因果关系）", "meaning": "随着", "level": "2级", "category": "相关关系", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "人数が増えるにしたがって、にぎやかになる。", "ex_cn": "随着人数增加，变得热闹。"}, {"id": 86, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "につれて（自然发生）", "meaning": "随着，越…越…", "level": "2级", "category": "相关关系", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "高くなるにつれて、見晴らしが良くなった。", "ex_cn": "越变高，视野越好。"}, {"id": 87, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にともなって（伴随，书面语）", "meaning": "伴随着，随着", "level": "2级", "category": "相关关系", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "戦争にともなって、物価が上がった。", "ex_cn": "伴随战争，物价上涨了。"}, {"id": 88, "unit": "5关联•相应•相称•相关关系", "noun": "であれ", "na": "であれ", "i": "原形", "verb": "原形", "pattern": "ば…ほど", "meaning": "越…越", "level": "2级", "category": "相关关系", "conn": "名词·であれ ／ ナ形·であれ ／ イ形·原形 ／ 动词·原形", "ex_jp": "本は読めば読むほどおもしろい。", "ex_cn": "书越读越有趣。"}, {"id": 89, "unit": "5关联•相应•相称•相关关系", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にかけては", "meaning": "在…方面，论…的话", "level": "2级", "category": "相应•相称", "conn": "名词·词干", "ex_jp": "料理にかけては、彼女の右に出る者はいない。", "ex_cn": "在烹饪方面，没人比得过她。"}, {"id": 90, "unit": "6添加•附带•非附带", "noun": "の形", "na": "な形", "i": "原形", "verb": "原形", "pattern": "うえ（に）", "meaning": "不仅…而且", "level": "2级", "category": "添加", "conn": "名词·の形 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼は料理が上手なうえに、親切だ。", "ex_cn": "他不仅菜做得好，还很热心。"}, {"id": 91, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にくわえ/にくわえて", "meaning": "除了…还", "level": "2级", "category": "添加", "conn": "名词·词干", "ex_jp": "デザインに加え、機能も優れている。", "ex_cn": "除了设计，功能也很出色。"}, {"id": 92, "unit": "6添加•附带•非附带", "noun": "词干", "na": "である", "i": "原形", "verb": "原形", "pattern": "のみならず", "meaning": "不仅…而且", "level": "2级", "category": "添加", "conn": "名词·词干 ／ ナ形·である ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼は英語のみならず、中国語も話す。", "ex_cn": "他不仅会说英语，也会中文。"}, {"id": 93, "unit": "6添加•附带•非附带", "noun": "词干", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ばかりか/ ばかりでなく", "meaning": "不仅…而且", "level": "2级", "category": "添加", "conn": "名词·词干 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼は金持ちなばかりか、有名だ。", "ex_cn": "他不仅有錢，而且有名。"}, {"id": 94, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "の", "pattern": "はもちろん/はもとより", "meaning": "不用说，何止是", "level": "2级", "category": "添加", "conn": "名词·词干 ／ 动词·の", "ex_jp": "子供はもちろん、大人も楽しめる。", "ex_cn": "不用说孩子，大人也能享受。"}, {"id": 95, "unit": "6添加•附带•非附带", "noun": "词干", "na": "词干", "i": "ければ形", "verb": "ば形", "pattern": "も…ば/なら…も", "meaning": "既…又…", "level": "2级", "category": "添加", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·ければ形 ／ 动词·ば形", "ex_jp": "彼は歌も歌えば、踊りも踊る。", "ex_cn": "他既会唱歌，也会跳舞。"}, {"id": 96, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "と相まって", "meaning": "加上，结合", "level": "1级", "category": "添加", "conn": "名词·词干", "ex_jp": "好天気と相まって、気分が良い。", "ex_cn": "加上好天气，心情很好。"}, {"id": 97, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "はおろか", "meaning": "别说…连…", "level": "1级", "category": "添加", "conn": "名词·词干", "ex_jp": "漢字はおろか、ひらがなも書けない。", "ex_cn": "别说汉字，连平假名都不会写。"}, {"id": 98, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "ひとり…だけでなく/のみならず（书面语）", "meaning": "不仅，不止", "level": "1级", "category": "添加", "conn": "名词·词干", "ex_jp": "彼ひとりだけでなく、みんな参加した。", "ex_cn": "不仅他一个人，大家都参加了。"}, {"id": 99, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "もさることながら", "meaning": "…不必说…都", "level": "1级", "category": "添加", "conn": "名词·词干", "ex_jp": "味もさることながら、見た目も良い。", "ex_cn": "味道自不必说，外观也好。"}, {"id": 100, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にとどまらず", "meaning": "不仅，不限于", "level": "1级", "category": "添加", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "被害はこの地域にとどまらず、広がった。", "ex_cn": "受害不限于本地区，还扩大了。"}, {"id": 101, "unit": "6添加•附带•非附带", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "ついでに", "meaning": "顺便", "level": "2级", "category": "附带•非附带", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "買い物のついでに、手紙を出した。", "ex_cn": "顺便买东西时寄了信。"}, {"id": 102, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "ぬきで/ぬきに/ぬきの", "meaning": "除去，省去，没有", "level": "2级", "category": "附带•非附带", "conn": "名词·词干", "ex_jp": "朝ごはん抜きで、出かけた。", "ex_cn": "不吃早饭就出门了。"}, {"id": 103, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をこめて", "meaning": "怀着，带着", "level": "2级", "category": "附带•非附带", "conn": "名词·词干", "ex_jp": "心を込めて、手紙を書いた。", "ex_cn": "怀着心意写了信。"}, {"id": 104, "unit": "6添加•附带•非附带", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をぬきにして/はぬきにして", "meaning": "除去，省去，去掉", "level": "2级", "category": "附带•非附带", "conn": "名词·词干", "ex_jp": "冗談を抜きにして、本題に入ろう。", "ex_cn": "抛开玩笑，进入正题吧。"}, {"id": 105, "unit": "7手段•媒介•対象", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "によって/による", "meaning": "通过，借助", "level": "2级", "category": "手段•媒介", "conn": "名词·词干", "ex_jp": "コンピュータによって、計算した。", "ex_cn": "通过计算机进行了计算。"}, {"id": 106, "unit": "7手段•媒介•対象", "noun": "词干", "na": "", "i": "", "verb": "こと", "pattern": "を通じて/を通して", "meaning": "通过", "level": "2级", "category": "手段•媒介", "conn": "名词·词干 ／ 动词·こと", "ex_jp": "インターネットを通して、友達と話す。", "ex_cn": "通过互联网和朋友说话。"}, {"id": 107, "unit": "7手段•媒介•対象", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をもって/でもって", "meaning": "以（前为书面语）", "level": "1级", "category": "手段•媒介", "conn": "名词·词干", "ex_jp": "証拠をもって、証明する。", "ex_cn": "以证据来证明。"}, {"id": 108, "unit": "7手段•媒介•対象", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "に対して/に対する", "meaning": "对", "level": "2级", "category": "対象", "conn": "名词·词干", "ex_jp": "先生に対して、礼儀を守る。", "ex_cn": "对老师遵守礼仪。"}, {"id": 109, "unit": "7手段•媒介•対象", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "向けに/向けの/向けだ", "meaning": "面向，对", "level": "2级", "category": "対象", "conn": "名词·词干", "ex_jp": "子供向けの本を読む。", "ex_cn": "读面向孩子的书。"}, {"id": 110, "unit": "7手段•媒介•対象", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をめぐって/をめぐる", "meaning": "围绕着", "level": "2级", "category": "対象", "conn": "名词·词干", "ex_jp": "環境問題をめぐって、議論した。", "ex_cn": "围绕环境问题进行了讨论。"}, {"id": 111, "unit": "7手段•媒介•対象", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にかかわる", "meaning": "涉及，与…有关", "level": "1级", "category": "対象", "conn": "名词·词干", "ex_jp": "これは命にかかわる病気だ。", "ex_cn": "这是关乎生命的病。"}, {"id": 112, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "からいって", "meaning": "从…来看/来说", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "結果からいって、成功だ。", "ex_cn": "从结果来看，是成功了。"}, {"id": 113, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "からすると/からすれば/からして", "meaning": "从…来看，就...来说", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "彼の様子からすると、元気だ。", "ex_cn": "从他的样子来看，很有精神。"}, {"id": 114, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "からみて", "meaning": "从…来看，根据…来看", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "彼の実力からみて、合格できる。", "ex_cn": "根据他的实力来看，能够通过。"}, {"id": 115, "unit": "8根据•不定•比喻", "noun": "の形", "na": "", "i": "", "verb": "", "pattern": "ことだから", "meaning": "因为（大家都明白）", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·の形", "ex_jp": "日曜日のことだから、混んでいる。", "ex_cn": "因为是星期天，很拥挤。"}, {"id": 116, "unit": "8根据•不定•比喻", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ことには (ことにゃ）（书面语）", "meaning": "据…说", "level": "2级", "category": "根据•不定•比喻", "conn": "动词·原形", "ex_jp": "悲しいことに、別れなければならない。", "ex_cn": "令人悲伤的是，必须分别。"}, {"id": 117, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "によって", "meaning": "根据，通过", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "法律によって、罰せられる。", "ex_cn": "根据法律受到惩罚。"}, {"id": 118, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "による", "meaning": "根据，按照", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "出身地による違いがある。", "ex_cn": "根据出生地有差异。"}, {"id": 119, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "によると", "meaning": "根据，据说", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "天気予報によると、明日は雨だ。", "ex_cn": "根据天气预报，明天有雨。"}, {"id": 120, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "によれば", "meaning": "根据，据说", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "新聞によれば、事故があった。", "ex_cn": "据报纸报道，发生了事故。"}, {"id": 121, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をもとに（して）", "meaning": "以…为依据/根据", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "事実をもとに、小説を書いた。", "ex_cn": "以事实为基础写了小说。"}, {"id": 122, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "〜にてらして/にてらした", "meaning": "参照，按照，根据", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "過去に照らして、将来を考える。", "ex_cn": "参照过去，思考将来。"}, {"id": 123, "unit": "8根据•不定•比喻", "noun": "である", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ところから", "meaning": "因为…所以，从…而", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·である ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼が新人であるところから、丁寧に教えた。", "ex_cn": "因为他是新人，所以仔细地教了。"}, {"id": 124, "unit": "8根据•不定•比喻", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "とでもいうべき", "meaning": "也可称作是…", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·词干", "ex_jp": "それは奇跡とでもいうべき出来事だ。", "ex_cn": "那是堪称奇迹的事件。"}, {"id": 125, "unit": "8根据•不定•比喻", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "ごとし/ごとき/ごとく", "meaning": "像…一样", "level": "2级", "category": "根据•不定•比喻", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "夢のごとく、過ぎ去った。", "ex_cn": "像梦一样过去了。"}, {"id": 126, "unit": "8根据•不定•比喻", "noun": "疑问词+助词", "na": "", "i": "", "verb": "", "pattern": "ともなく", "meaning": "不知，并没等", "level": "", "category": "", "conn": "名词·疑问词+助词", "ex_jp": "誰ともなく、笑い出した。", "ex_cn": "不知是谁，笑了起来。"}, {"id": 127, "unit": "9时间•场面•方向•进行", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "ごしに（越しに）", "meaning": "经过，隔着", "level": "2级", "category": "时点•场面•方向", "conn": "名词·词干", "ex_jp": "窓越しに、景色が見える。", "ex_cn": "隔着窗户能看到景色。"}, {"id": 128, "unit": "9时间•场面•方向•进行", "noun": "词干", "na": "な形", "i": "原形", "verb": "原形", "pattern": "うちに", "meaning": "（某时间内）", "level": "2级", "category": "时点•场面•方向", "conn": "名词·词干 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "若いうちに、旅をしたい。", "ex_cn": "想趁年轻去旅行。"}, {"id": 129, "unit": "9时间•场面•方向•进行", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "かける/かけの/かけだ", "meaning": "刚要/正要…就，差一点", "level": "2级", "category": "时点•场面•方向", "conn": "动词·ます形", "ex_jp": "本を読みかけた。", "ex_cn": "刚读了一点儿书（正要读）。"}, {"id": 130, "unit": "9时间•场面•方向•进行", "noun": "の形", "na": "", "i": "原形", "verb": "ている", "pattern": "最中（に）/最中だ", "meaning": "正…中", "level": "2级", "category": "时点•场面•方向", "conn": "名词·の形 ／ イ形·原形 ／ 动词·ている", "ex_jp": "食事の最中に、電話が鳴った。", "ex_cn": "正吃饭时，电话响了。"}, {"id": 131, "unit": "9时间•场面•方向•进行", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "際（に）/際の", "meaning": "在…时候", "level": "2级", "category": "时点•场面•方向", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "非常の際に、このボタンを押す。", "ex_cn": "紧急时按这个按钮。"}, {"id": 132, "unit": "9时间•场面•方向•进行", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ところ", "meaning": "…时", "level": "2级", "category": "时点•场面•方向", "conn": "动词·原形", "ex_jp": "これから行くところだ。", "ex_cn": "现在正要过去。"}, {"id": 133, "unit": "9时间•场面•方向•进行", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にあたってパこあたり", "meaning": "当…之时，…之际", "level": "2级", "category": "时点•场面•方向", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "出発にあたって、挨拶をする。", "ex_cn": "出发之际，致辞。"}, {"id": 134, "unit": "9时间•场面•方向•进行", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "において/における（で的书面语）", "meaning": "在等", "level": "2级", "category": "时点•场面•方向", "conn": "名词·词干", "ex_jp": "日本において、地震が多い。", "ex_cn": "在日本，地震很多。"}, {"id": 135, "unit": "9时间•场面•方向•进行", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "に際して", "meaning": "在…之际", "level": "2级", "category": "时点•场面•方向", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "試験に際して、注意を読む。", "ex_cn": "考试之际，阅读注意事项。"}, {"id": 136, "unit": "9时间•场面•方向•进行", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "あがる（他动）", "meaning": "…起来，向上…", "level": "2级", "category": "时点•场面•方向", "conn": "动词·ます形", "ex_jp": "本を読み上げた。", "ex_cn": "把书读完了（读到底了）。"}, {"id": 137, "unit": "9时间•场面•方向•进行", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "あげる（自动）", "meaning": "…起来，向上…", "level": "2级", "category": "时点•场面•方向", "conn": "动词·ます形", "ex_jp": "子供が飛び上がって喜んだ。", "ex_cn": "孩子跳起来，高兴了。"}, {"id": 138, "unit": "9时间•场面•方向•进行", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にあって", "meaning": "在…，处于…", "level": "1级", "category": "时点•场面•方向", "conn": "名词·词干", "ex_jp": "戦争にあって、人々は苦しんだ。", "ex_cn": "处于战争中，人们受苦了。"}, {"id": 139, "unit": "9时间•场面•方向•进行", "noun": "词干を词干", "na": "", "i": "", "verb": "", "pattern": "控えて", "meaning": "…在即，面临，背靠", "level": "1级", "category": "时点•场面•方向", "conn": "名词·词干を词干", "ex_jp": "試験を控えて、勉強している。", "ex_cn": "面临考试，正在学习。"}, {"id": 140, "unit": "9时间•场面•方向•进行", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "つつある", "meaning": "在，正在", "level": "2级", "category": "进行", "conn": "动词·ます形", "ex_jp": "景気が回復しつつある。", "ex_cn": "景气正在恢复。"}, {"id": 141, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "からして", "meaning": "从…就，首先从…就", "level": "2级", "category": "例举•并列", "conn": "名词·词干", "ex_jp": "値段からして、高級だ。", "ex_cn": "首先从价格来看，就是高档的。"}, {"id": 142, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "とか（部分例举）", "meaning": "…啦…啦", "level": "2级", "category": "例举•并列", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "映画とか、音楽とかが好きだ。", "ex_cn": "喜欢电影啦、音乐啦。"}, {"id": 143, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "など", "meaning": "…等等", "level": "2级", "category": "例举•并列", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "ペンなどを買った。", "ex_cn": "买了笔之类的东西。"}, {"id": 144, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "たり", "pattern": "なんか（など的粗俗说法）", "meaning": "之类，…等等", "level": "2级", "category": "例举•并列", "conn": "名词·词干 ／ 动词·たり", "ex_jp": "漫画なんかを読んでいた。", "ex_cn": "读了漫画之类的书。"}, {"id": 145, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にしても…にしても", "meaning": "…也好…也好，无论…还是", "level": "2级", "category": "例举•并列", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "行くにしても、行かないにしても、連絡する。", "ex_cn": "去也好，不去也好，都要联系。"}, {"id": 146, "unit": "10例举•并列", "noun": "の形", "na": "", "i": "原形", "verb": "原形", "pattern": "ような/ように", "meaning": "像，之类", "level": "2级", "category": "例举•并列", "conn": "名词·の形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼のような人が好きだ。", "ex_cn": "喜欢像他那样的人。"}, {"id": 147, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "原形", "verb": "原形", "pattern": "やら…やら（部分例举）", "meaning": "…啦…啦，又是…又是…", "level": "2级", "category": "例举•并列", "conn": "名词·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "泣くやら、笑うやら、大騒ぎだ。", "ex_cn": "又哭又笑，一片混乱。"}, {"id": 148, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "をはじめ（として）", "meaning": "以…为首/为代表", "level": "2级", "category": "例举•并列", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "東京をはじめ、多くの都市で開かれた。", "ex_cn": "以东京为首，在许多城市举办。"}, {"id": 149, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "であれ…であれ", "meaning": "无论…还是", "level": "1级", "category": "例举•并列", "conn": "名词·词干", "ex_jp": "大人であれ、子供であれ、平等だ。", "ex_cn": "无论大人还是孩子，都是平等的。"}, {"id": 150, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "といい…といい", "meaning": "无论…也好…也好", "level": "1级", "category": "例举•并列", "conn": "名词·词干", "ex_jp": "景色といい、料理といい、最高だ。", "ex_cn": "无论景色还是料理，都是最棒的。"}, {"id": 151, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "といわず…といわず", "meaning": "无论…还是…都", "level": "1级", "category": "例举•并列", "conn": "名词·词干", "ex_jp": "昼といわず、夜といわず、働いている。", "ex_cn": "不论白天黑夜，都在工作。"}, {"id": 152, "unit": "10例举•并列", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "なり…なり（不用过去式）", "meaning": "或者…或者，也好…也好", "level": "1级", "category": "例举•并列", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "電話なり、手紙なり、連絡しなさい。", "ex_cn": "打电话或者写信，联系一下吧。"}, {"id": 153, "unit": "10例举•并列", "noun": "", "na": "であれ", "i": "词干", "verb": "", "pattern": "かれ…かれ/であれ…であれ", "meaning": "或…或", "level": "1级", "category": "例举•并列", "conn": "ナ形·であれ ／ イ形·词干", "ex_jp": "暑かれ寒かれ、毎日歩く。", "ex_cn": "无论冷热，每天都散步。"}, {"id": 154, "unit": "10例举•并列", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "というか…というか", "meaning": "是…呢，还是…呢", "level": "1级", "category": "例举•并列", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "嬉しいというか、ほっとしたというか、複雑だ。", "ex_cn": "是高兴呢，还是松了口气呢，很复杂。"}, {"id": 155, "unit": "11起点•终点•限界•范围", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "から…にかけて", "meaning": "从…到", "level": "2级", "category": "范围", "conn": "名词·词干", "ex_jp": "東京から大阪にかけて、雨が降る。", "ex_cn": "从东京到大阪会下雨。"}, {"id": 156, "unit": "11起点•终点•限界•范围", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にわたって/にわたる/にわたり/にわたった", "meaning": "（表规模大）", "level": "2级", "category": "范围", "conn": "名词·词干", "ex_jp": "三日間にわたって、祭りがあった。", "ex_cn": "祭典持续了整整三天。"}, {"id": 157, "unit": "11起点•终点•限界•范围", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "を通じて/通して", "meaning": "（表整个期间，范围内）", "level": "2级", "category": "范围", "conn": "名词·词干", "ex_jp": "一年を通じて、暖かい。", "ex_cn": "一整年都很暖和。"}, {"id": 158, "unit": "11起点•终点•限界•范围", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "というところだ/といったところだ", "meaning": "不过，也就是", "level": "1级", "category": "范围", "conn": "名词·词干", "ex_jp": "給料は二十万円というところだ。", "ex_cn": "工资也就是二十万日元左右。"}, {"id": 159, "unit": "11起点•终点•限界•范围", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "に至るまで", "meaning": "直到，连…也…", "level": "1级", "category": "范围", "conn": "名词·词干", "ex_jp": "子供に至るまで、みんな知っている。", "ex_cn": "连孩子都知道。"}, {"id": 160, "unit": "11起点•终点•限界•范围", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "を皮切りに（して）/皮切りとして", "meaning": "以…为开端/出发点", "level": "1级", "category": "范围", "conn": "名词·词干", "ex_jp": "東京公演を皮切りに、全国を回った。", "ex_cn": "以东京公演为开端，巡回了全国。"}, {"id": 161, "unit": "11起点•终点•限界•范围", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をもって/でもって（をもちまして为敬语）", "meaning": "以", "level": "1级", "category": "范围", "conn": "名词·词干", "ex_jp": "今日をもって、終了します。", "ex_cn": "以今天为止，结束。"}, {"id": 162, "unit": "12条件", "noun": "词干", "na": "で形", "i": "く形", "verb": "ます形", "pattern": "さえ…ば/さえ〜たら", "meaning": "只要…就", "level": "2级", "category": "条件", "conn": "名词·词干 ／ ナ形·で形 ／ イ形·く形 ／ 动词·ます形", "ex_jp": "お金さえあれば、買える。", "ex_cn": "只要有钱，就能买。"}, {"id": 163, "unit": "12条件", "noun": "", "na": "", "i": "", "verb": "て形", "pattern": "てかちでないと/てからでなければ/てから でなかったら", "meaning": "如果不先，不…就不能", "level": "2级", "category": "条件", "conn": "动词·て形", "ex_jp": "説明を聞いてからでないと、分からない。", "ex_cn": "如果不先听说明，就不懂。"}, {"id": 164, "unit": "12条件", "noun": "だ形", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "としたら/とすれば/とすると", "meaning": "假如，如果，那么", "level": "2级", "category": "条件", "conn": "名词·だ形 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "雨だとしたら、中止だ。", "ex_cn": "如果下雨，就中止。"}, {"id": 165, "unit": "12条件", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "としても", "meaning": "即使…也", "level": "2级", "category": "条件", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "子供としても、意見がある。", "ex_cn": "即使作为孩子，也有意见。"}, {"id": 166, "unit": "12条件", "noun": "で形", "na": "で形", "i": "", "verb": "ない形", "pattern": "ないことには", "meaning": "如果不…就不…", "level": "2级", "category": "条件", "conn": "名词·で形 ／ ナ形·で形 ／ 动词·ない形", "ex_jp": "行かないことには、分からない。", "ex_cn": "如果不去，就不明白。"}, {"id": 167, "unit": "12条件", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "ぬきに", "meaning": "撇开/没有…就不能", "level": "2级", "category": "条件", "conn": "名词·词干", "ex_jp": "冗談ぬきに、本気で言う。", "ex_cn": "抛开玩笑，认真地说。"}, {"id": 168, "unit": "12条件", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ものなら", "meaning": "如果/要是…的话", "level": "2级", "category": "条件", "conn": "动词·原形", "ex_jp": "できるものなら、世界中を旅したい。", "ex_cn": "如果可能，想去周游世界。"}, {"id": 169, "unit": "12条件", "noun": "词干", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "といっては", "meaning": "如果说", "level": "2级", "category": "条件", "conn": "名词·词干 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "便利だといっては、すぐ壊れた。", "ex_cn": "说是方便，马上就坏了。"}, {"id": 170, "unit": "12条件", "noun": "", "na": "", "i": "", "verb": "た形", "pattern": "が最後/たら最後", "meaning": "一旦…就", "level": "1级", "category": "条件", "conn": "动词·た形", "ex_jp": "彼は笑ったが最後、止まらない。", "ex_cn": "他一旦笑起来，就停不下来。"}, {"id": 171, "unit": "12条件", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ことなしに", "meaning": "如果不…则，不…就", "level": "1级", "category": "条件", "conn": "动词·原形", "ex_jp": "努力することなしに、成功しない。", "ex_cn": "不努力就不会成功。"}, {"id": 172, "unit": "12条件", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "なくして（は）", "meaning": "没有…就", "level": "1级", "category": "条件", "conn": "名词·词干", "ex_jp": "愛なくして、幸せはない。", "ex_cn": "没有爱，就没有幸福。"}, {"id": 173, "unit": "12条件", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "とあっては /とあれば（短句）", "meaning": "如果…的话", "level": "1级", "category": "条件", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "休日とあれば、混む。", "ex_cn": "如果是休息日，就会拥挤。"}, {"id": 174, "unit": "12条件", "noun": "", "na": "", "i": "", "verb": "", "pattern": "となると/となれば", "meaning": "如果…的话", "level": "1级", "category": "条件", "conn": "（接続不限）", "ex_jp": "海外旅行となると、お金がかかる。", "ex_cn": "要是去海外旅行，很花钱。"}, {"id": 175, "unit": "12条件", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "よし/よしや/よしんば〜ても", "meaning": "即使…也，尽管…也", "level": "1级", "category": "条件", "conn": "名词·词干", "ex_jp": "よしんば失敗しても、後悔しない。", "ex_cn": "即使失败，也不后悔。"}, {"id": 176, "unit": "13対比•比较•最高级", "noun": "である", "na": "", "i": "原形", "verb": "原形", "pattern": "いっぽう（で）", "meaning": "一方面…另一方面", "level": "2级", "category": "対比", "conn": "名词·である ／ イ形·原形 ／ 动词·原形", "ex_jp": "働く一方で、勉強もする。", "ex_cn": "一方面工作，另一方面也学习。"}, {"id": 177, "unit": "13対比•比较•最高级", "noun": "な形", "na": "", "i": "", "verb": "原形", "pattern": "かわりに", "meaning": "代表，代替，也相应的", "level": "2级", "category": "対比", "conn": "名词·な形 ／ 动词·原形", "ex_jp": "行く代わりに、電話する。", "ex_cn": "不去，改为打电话。"}, {"id": 178, "unit": "13対比•比较•最高级", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "というより", "meaning": "与其说…倒不如说", "level": "2级", "category": "対比", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "行くというより、逃げている。", "ex_cn": "与其说走，不如说在逃跑。"}, {"id": 179, "unit": "13対比•比较•最高级", "noun": "词干", "na": "な形", "i": "原形", "verb": "原形", "pattern": "どころか", "meaning": "别说…就连", "level": "2级", "category": "対比", "conn": "名词·词干 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "漢字どころか、ひらがなも読めない。", "ex_cn": "别说汉字，连平假名都不认识。"}, {"id": 180, "unit": "13対比•比较•最高级", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にかわり/かわって", "meaning": "替代，代表", "level": "2级", "category": "対比", "conn": "名词·词干", "ex_jp": "先生にかわって、生徒が発表した。", "ex_cn": "学生代替老师发表了。"}, {"id": 181, "unit": "13対比•比较•最高级", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "に反して/に反する", "meaning": "与…相反", "level": "2级", "category": "対比", "conn": "名词·词干", "ex_jp": "予想に反して、雨は降らなかった。", "ex_cn": "与预想相反，没下雨。"}, {"id": 182, "unit": "13対比•比较•最高级", "noun": "である", "na": "な形", "i": "原形", "verb": "原形", "pattern": "反面", "meaning": "另一方面，…的反面", "level": "2级", "category": "対比", "conn": "名词·である ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "便利な反面、危険もある。", "ex_cn": "方便的反面，也有危险。"}, {"id": 183, "unit": "13対比•比较•最高级", "noun": "词干", "na": "なの形", "i": "の形", "verb": "の", "pattern": "に対して", "meaning": "与…相比", "level": "2级", "category": "対比", "conn": "名词·词干 ／ ナ形·なの形 ／ イ形·の形 ／ 动词·の", "ex_jp": "兄に対して、弟は大人しい。", "ex_cn": "与哥哥相比，弟弟很老实。"}, {"id": 184, "unit": "13対比•比较•最高级", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "ないまでも/ぬまでも", "meaning": "尽管不…至少", "level": "1级", "category": "対比", "conn": "动词·ない形", "ex_jp": "全部できないまでも、少しはできる。", "ex_cn": "即使不能全做到，至少能做一点。"}, {"id": 185, "unit": "13対比•比较•最高级", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にひきかえ", "meaning": "与…相反/完全不同", "level": "1级", "category": "対比", "conn": "名词·词干", "ex_jp": "兄にひきかえ、弟は活発だ。", "ex_cn": "与哥哥相反，弟弟很活泼。"}, {"id": 186, "unit": "13対比•比较•最高级", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "くらい…はない", "meaning": "没有比…更，像…少/没有/不多", "level": "2级", "category": "比较•最高级", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "彼ぐらい優しい人はいない。", "ex_cn": "没有比他更温柔的人了。"}, {"id": 187, "unit": "13対比•比较•最高级", "noun": "词干", "na": "なの形", "i": "の形", "verb": "原形", "pattern": "に限る", "meaning": "…最好", "level": "2级", "category": "比较•最高级", "conn": "名词·词干 ／ ナ形·なの形 ／ イ形·の形 ／ 动词·原形", "ex_jp": "夏はビールに限る。", "ex_cn": "夏天喝啤酒最好。"}, {"id": 188, "unit": "13対比•比较•最高级", "noun": "词干", "na": "", "i": "", "verb": "の形", "pattern": "〜に/とくらベて/くらベると/くらベれば", "meaning": "和…相比，与…相比", "level": "2级", "category": "比较•最高级", "conn": "名词·词干 ／ 动词·の形", "ex_jp": "去年に比べて、今年は暖かい。", "ex_cn": "和去年相比，今年暖和。"}, {"id": 189, "unit": "13対比•比较•最高级", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "ほど…はない", "meaning": "没有比…更，没有像…更", "level": "2级", "category": "比较•最高级", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "富士山ほど高い山はない。", "ex_cn": "没有比富士山更高的山了。"}, {"id": 190, "unit": "13対比•比较•最高级", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にもまして", "meaning": "比，超过", "level": "1级", "category": "比较•最高级", "conn": "名词·词干", "ex_jp": "昔にもまして、便利になった。", "ex_cn": "比过去更加方便了。"}, {"id": 191, "unit": "14转折•让步", "noun": "だ形", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "からといって", "meaning": "虽说...但", "level": "2级", "category": "转折•让步", "conn": "名词·だ形 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "安いからといって、買いすぎないで。", "ex_cn": "虽说便宜，也别买太多。"}, {"id": 192, "unit": "14转折•让步", "noun": "の形", "na": "な形", "i": "原形", "verb": "原形", "pattern": "くせに/くせして", "meaning": "明明...却", "level": "2级", "category": "转折•让步", "conn": "名词·の形 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "学生のくせに、勉強しない。", "ex_cn": "明明是学生，却不学习。"}, {"id": 193, "unit": "14转折•让步", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "たところで", "meaning": "尽管，即使", "level": "2级", "category": "转折•让步", "conn": "动词·原形", "ex_jp": "急いだところで、間に合わない。", "ex_cn": "即使着急，也来不及。"}, {"id": 194, "unit": "14转折•让步", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "つつ/つつも", "meaning": "虽然…但是…", "level": "2级", "category": "转折•让步", "conn": "动词·ます形", "ex_jp": "体に悪いと知りつつも、タバコを吸う。", "ex_cn": "明知对身体不好，却还是吸烟。"}, {"id": 195, "unit": "14转折•让步", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "といっても", "meaning": "虽说…也只是", "level": "2级", "category": "转折•让步", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "忙しいといっても、休みはある。", "ex_cn": "虽说忙，也还是有休息的。"}, {"id": 196, "unit": "14转折•让步", "noun": "だ形", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "としても/にしても", "meaning": "即使…也", "level": "2级", "category": "转折•让步", "conn": "名词·だ形 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "子供だとしても、ルールは守る。", "ex_cn": "即使是个孩子，也要守规矩。"}, {"id": 197, "unit": "14转折•让步", "noun": "词干", "na": "词干", "i": "词干", "verb": "原形", "pattern": "にしろ/にせよ（书面语）", "meaning": "即使…也，就算…也", "level": "2级", "category": "转折•让步", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·词干 ／ 动词·原形", "ex_jp": "雨にせよ、風にせよ、行く。", "ex_cn": "即使下雨，还是刮风，都要去。"}, {"id": 198, "unit": "14转折•让步", "noun": "とはいう", "na": "", "i": "", "verb": "原形", "pattern": "ものの /とはいうものの", "meaning": "虽然…但是，尽管…可是", "level": "2级", "category": "转折•让步", "conn": "名词·とはいう ／ 动词·原形", "ex_jp": "買ったものの、まだ使っていない。", "ex_cn": "虽然买了，却还没用。"}, {"id": 199, "unit": "14转折•让步", "noun": "だ形", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "からいいが/からいいけど", "meaning": "幸亏/还好…但", "level": "2级", "category": "转折•让步", "conn": "名词·だ形 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "間に合ったからいいが、焦った。", "ex_cn": "幸亏赶上了，但当时很着急。"}, {"id": 200, "unit": "14转折•让步", "noun": "だ形", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "からいいようなものの", "meaning": "幸亏/还好…但", "level": "2级", "category": "转折•让步", "conn": "名词·だ形 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "怪我が軽かったからいいようなものの、悲惨だった。", "ex_cn": "幸亏伤势轻，但也很惨。"}, {"id": 201, "unit": "14转折•让步", "noun": "", "na": "", "i": "", "verb": "う/まい形", "pattern": "う（よう）と…まいと/う（よう）と…まいが", "meaning": "无论…还是不…", "level": "1级", "category": "转折•让步", "conn": "动词·う/まい形", "ex_jp": "行こうと行くまいと、関係ない。", "ex_cn": "去也好不去也好，都无关紧要。"}, {"id": 202, "unit": "14转折•让步", "noun": "词干", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "といえども", "meaning": "即使…也，虽然…但是", "level": "1级", "category": "转折•让步", "conn": "名词·词干 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "子供といえども、責任がある。", "ex_cn": "即使孩子，也有责任。"}, {"id": 203, "unit": "14转折•让步", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "はいえ", "meaning": "虽说…但是，尽管…可是", "level": "1级", "category": "转折•让步", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "安いはいえ、質は良い。", "ex_cn": "虽说便宜，但质量好。"}, {"id": 204, "unit": "14转折•让步", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "思いきゃ", "meaning": "原以为…不料", "level": "1级", "category": "转折•让步", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "楽しいと思いきや、寂しかった。", "ex_cn": "原以为快乐，不料却很寂寞。"}, {"id": 205, "unit": "14转折•让步", "noun": "の形", "na": "", "i": "原形", "verb": "原形", "pattern": "ところを", "meaning": "（表对对方感谢或歉意）", "level": "1级", "category": "转折•让步", "conn": "名词·の形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "お忙しいところを、すみません。", "ex_cn": "在您百忙之中打扰，不好意思。"}, {"id": 206, "unit": "14转折•让步", "noun": "词干", "na": "词干", "i": "原形", "verb": "ます形", "pattern": "ながら（に/も）", "meaning": "虽然", "level": "1级", "category": "转折•让步", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·ます形", "ex_jp": "子供ながら、大人のようだ。", "ex_cn": "虽是孩子，却像个大人。"}, {"id": 207, "unit": "14转折•让步", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にあっても", "meaning": "即使…也", "level": "1级", "category": "转折•让步", "conn": "名词·词干", "ex_jp": "どんな困難にあっても、諦めない。", "ex_cn": "即使身处任何困难，也不放弃。"}, {"id": 208, "unit": "14转折•让步", "noun": "", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ものを（与のに相近）", "meaning": "…（就好了）、可是…", "level": "1级", "category": "转折•让步", "conn": "ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "言ってくれればいいものを、黙っている。", "ex_cn": "跟我说就好了，却沉默不语。"}, {"id": 209, "unit": "15过程•完成•结果", "noun": "の形", "na": "", "i": "", "verb": "た形", "pattern": "あげく（に）/あげくの", "meaning": "最后，的结果", "level": "2级", "category": "过程", "conn": "名词·の形 ／ 动词·た形", "ex_jp": "長い議論のあげく、決まらなかった。", "ex_cn": "长时间讨论的结果，没能决定。"}, {"id": 210, "unit": "15过程•完成•结果", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "上で", "meaning": "在…方面，关于", "level": "2级", "category": "过程", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "勉強する上で、辞書は必要だ。", "ex_cn": "在学习方面，词典是必要的。"}, {"id": 211, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "た形/ない形", "pattern": "きり（だ）/きり…ない", "meaning": "…之后、再也没…", "level": "2级", "category": "过程", "conn": "动词·た形/ない形", "ex_jp": "彼は出かけたきり、帰ってこない。", "ex_cn": "他出门之后，就再没回来。"}, {"id": 212, "unit": "15过程•完成•结果", "noun": "の形", "na": "", "i": "", "verb": "た形", "pattern": "すえ（に）/すえの", "meaning": "…之后、结果...，最终", "level": "2级", "category": "过程", "conn": "名词·の形 ／ 动词·た形", "ex_jp": "悩んだすえ、転職した。", "ex_cn": "烦恼的结果，辞职了。"}, {"id": 213, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "た形", "pattern": "たところ", "meaning": "结果", "level": "2级", "category": "过程", "conn": "动词·た形", "ex_jp": "薬を飲んだところ、眠くなった。", "ex_cn": "吃了药，结果困了。"}, {"id": 214, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "っぱなし", "meaning": "（保持某状态，该做也不做）", "level": "1级", "category": "过程", "conn": "动词·ます形", "ex_jp": "窓を開けっぱなしにした。", "ex_cn": "让窗户一直开着。"}, {"id": 215, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "た形", "pattern": "なり", "meaning": "一直，从…就没有", "level": "1级", "category": "过程", "conn": "动词·た形", "ex_jp": "彼は家を出たなり、帰ってこない。", "ex_cn": "他走出家门后，就再没回来。"}, {"id": 216, "unit": "15过程•完成•结果", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にいたって", "meaning": "到…，以致…", "level": "1级", "category": "过程", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "彼に至っては、何もできない。", "ex_cn": "至于他，则什么都不会。"}, {"id": 217, "unit": "15过程•完成•结果", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にいたっては", "meaning": "甚至，至此", "level": "1级", "category": "过程", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "子供にいたっては、心配だ。", "ex_cn": "甚至连孩子都让人担心。"}, {"id": 218, "unit": "15过程•完成•结果", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にいたっても", "meaning": "即使…也", "level": "1级", "category": "过程", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "大雨にいたっても、中止しない。", "ex_cn": "即使下大雨，也不中止。"}, {"id": 219, "unit": "15过程•完成•结果", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にして", "meaning": "到了…才", "level": "1级", "category": "过程", "conn": "名词·词干", "ex_jp": "六十歳にして、初めて海外へ行った。", "ex_cn": "到了六十岁，才第一次去海外。"}, {"id": 220, "unit": "15过程•完成•结果", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "ことになっている", "meaning": "规定，决定，预定", "level": "2级", "category": "完成•结果", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "この店は十時に閉まることになっている。", "ex_cn": "这家店规定十点关门。"}, {"id": 221, "unit": "15过程•完成•结果", "noun": "だ形", "na": "だ形", "i": "", "verb": "た形", "pattern": "っけ", "meaning": "是…吧！", "level": "2级", "category": "完成•结果", "conn": "名词·だ形 ／ ナ形·だ形 ／ 动词·た形", "ex_jp": "昨日のパーティー、楽しかったっけ。", "ex_cn": "昨天的派对，很开心吧。"}, {"id": 222, "unit": "15过程•完成•结果", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "ということだ", "meaning": "也就是说，即", "level": "2级", "category": "完成•结果", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "努力すれば、できるということだ。", "ex_cn": "也就是说，努力就能做到。"}, {"id": 223, "unit": "15过程•完成•结果", "noun": "な形/である", "na": "な形", "i": "", "verb": "原形", "pattern": "わけだ", "meaning": "当然，也就是说", "level": "2级", "category": "完成•结果", "conn": "名词·な形/である ／ ナ形·な形 ／ 动词·原形", "ex_jp": "毎日練習したから、上手なわけだ。", "ex_cn": "因为每天练习，所以会（是当然的）。"}, {"id": 224, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "きる/きれる", "meaning": "完，能…完等", "level": "2级", "category": "完成•结果", "conn": "动词·ます形", "ex_jp": "その本を一日で読みきった。", "ex_cn": "一天就把那本书读完了。"}, {"id": 225, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "きれない", "meaning": "不完，不能…完", "level": "2级", "category": "完成•结果", "conn": "动词·ます形", "ex_jp": "全部は覚えきれない。", "ex_cn": "无法全部记住。"}, {"id": 226, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "ぬく", "meaning": "…到底，一直…", "level": "2级", "category": "完成•结果", "conn": "动词·ます形", "ex_jp": "最後まで走りぬいた。", "ex_cn": "一直跑到了最后。"}, {"id": 227, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "あがる（自动）", "meaning": "…好了，完了…", "level": "2级", "category": "完成•结果", "conn": "动词·ます形", "ex_jp": "宿題が書き上がった。", "ex_cn": "作业写好了。"}, {"id": 228, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "あげる（他动）", "meaning": "...好了，…起了", "level": "2级", "category": "完成•结果", "conn": "动词·ます形", "ex_jp": "レポートを書き上げた。", "ex_cn": "写好了报告。"}, {"id": 229, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "始末だ", "meaning": "结果…，以至…", "level": "1级", "category": "完成•结果", "conn": "动词·原形", "ex_jp": "彼は借金を作り、逃げ出す始末だ。", "ex_cn": "他欠下债，最后竟逃走了。"}, {"id": 230, "unit": "15过程•完成•结果", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "ずじまい", "meaning": "结果没能，最终未能", "level": "1级", "category": "完成•结果", "conn": "动词·ない形", "ex_jp": "結局、行かずじまいだった。", "ex_cn": "结果最终还是没能去。"}, {"id": 231, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "によって", "meaning": "由…，被", "level": "2级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "この本は有名な作家によって書かれた。", "ex_cn": "这本书由著名作家所写。"}, {"id": 232, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "からいうと/からいえば/からいったら", "meaning": "从…来说，就…来说", "level": "2级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "私からいうと、賛成だ。", "ex_cn": "从我来说，是赞成的。"}, {"id": 233, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "からすると /からすれば/からして", "meaning": "从…来看，按…来衡量", "level": "2级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "外見からすると、高そうだ。", "ex_cn": "从外表来看，似乎很贵。"}, {"id": 234, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "からみると/からみれば/からみたら", "meaning": "从…来看，根据…来看", "level": "2级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "親からみると、子供はいつまでも子供だ。", "ex_cn": "在父母看来，孩子永远是孩子。"}, {"id": 235, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "として/としては", "meaning": "作为，以（身份、职位等）", "level": "2级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "彼は先生として、働いている。", "ex_cn": "他作为老师在工作。"}, {"id": 236, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "としても", "meaning": "作为…，以…的身份", "level": "2级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "趣味としても、有益だ。", "ex_cn": "作为兴趣，也很有益。"}, {"id": 237, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "とすれば", "meaning": "在…看来", "level": "2级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "私とすれば、反対だ。", "ex_cn": "在我来看，是反对的。"}, {"id": 238, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にしたら/にすれば", "meaning": "要是，照…来说", "level": "2级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "彼にすれば、迷惑だろう。", "ex_cn": "照他来说，应该很困扰吧。"}, {"id": 239, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にとって", "meaning": "对…来说", "level": "2级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "学生にとって、試験は大切だ。", "ex_cn": "对学生来说，考试很重要。"}, {"id": 240, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "なり（に）/なりの", "meaning": "有…，从…立场出发", "level": "1级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "私なりに、考えた。", "ex_cn": "以我自己的方式考虑了。"}, {"id": 241, "unit": "16主体•立场•资格", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をもって/でもって（书面语）", "meaning": "以…（谓语为动词）", "level": "1级", "category": "主体•立场•资格", "conn": "名词·词干", "ex_jp": "本日をもって、退職します。", "ex_cn": "以今天为界，退休了。"}, {"id": 242, "unit": "17倾向•状态•程度", "noun": "词干", "na": "", "i": "", "verb": "ます形", "pattern": "がち", "meaning": "每每，往往，容易，好，常常", "level": "2级", "category": "倾向•状态", "conn": "名词·词干 ／ 动词·ます形", "ex_jp": "彼は遅刻しがちだ。", "ex_cn": "他容易迟到。"}, {"id": 243, "unit": "17倾向•状态•程度", "noun": "词干", "na": "", "i": "", "verb": "ます形", "pattern": "気味（ぎみ）", "meaning": "感觉有点，有…味道", "level": "2级", "category": "倾向•状态", "conn": "名词·词干 ／ 动词·ます形", "ex_jp": "風邪気味だ。", "ex_cn": "感觉有点感冒。"}, {"id": 244, "unit": "17倾向•状态•程度", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "だらけ", "meaning": "净，全", "level": "2级", "category": "倾向•状态", "conn": "名词·词干", "ex_jp": "部屋はほこりだらけだ。", "ex_cn": "房间里净是灰尘。"}, {"id": 245, "unit": "17倾向•状态•程度", "noun": "词干", "na": "", "i": "", "verb": "ます形", "pattern": "っぽい", "meaning": "像，好，容易", "level": "2级", "category": "倾向•状态", "conn": "名词·词干 ／ 动词·ます形", "ex_jp": "彼は怒りっぽい。", "ex_cn": "他容易发怒。"}, {"id": 246, "unit": "17倾向•状态•程度", "noun": "词干", "na": "词干", "i": "词干", "verb": "ます形", "pattern": "げ（形容动词，书面语）", "meaning": "…样子（可不译）", "level": "2级", "category": "倾向•状态", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·词干 ／ 动词·ます形", "ex_jp": "彼は寂しげに、笑った。", "ex_cn": "他带着寂寞的神情笑了。"}, {"id": 247, "unit": "17倾向•状态•程度", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "きらいがある", "meaning": "有点", "level": "1级", "category": "倾向•状态", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "彼は嘘をつくきらいがある。", "ex_cn": "他有点撒谎的倾向。"}, {"id": 248, "unit": "17倾向•状态•程度", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "ずくめ", "meaning": "竟是", "level": "1级", "category": "倾向•状态", "conn": "名词·词干", "ex_jp": "今日はいいことずくめだ。", "ex_cn": "今天尽是好事。"}, {"id": 249, "unit": "17倾向•状态•程度", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "めく", "meaning": "有…气息，像…样子，带…意味", "level": "1级", "category": "倾向•状态", "conn": "名词·词干", "ex_jp": "空が春めいてきた。", "ex_cn": "天空有了春意。"}, {"id": 250, "unit": "17倾向•状态•程度", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "まみれ", "meaning": "沾满了，到处都", "level": "1级", "category": "倾向•状态", "conn": "名词·词干", "ex_jp": "汗まみれで、働いた。", "ex_cn": "满身大汗地工作了。"}, {"id": 251, "unit": "17倾向•状态•程度", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ともなく/ともなしに", "meaning": "无意中，无意识的", "level": "1级", "category": "倾向•状态", "conn": "动词·原形", "ex_jp": "見るともなく、空を見ていた。", "ex_cn": "无意之中，望着天空。"}, {"id": 252, "unit": "17倾向•状态•程度", "noun": "词干", "na": "な形", "i": "原形", "verb": "原形", "pattern": "くらい/くらいの/くらいだ", "meaning": "像，甚至", "level": "2级", "category": "程度", "conn": "名词·词干 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼は子供くらい、小さい。", "ex_cn": "他小得像孩子一样。"}, {"id": 253, "unit": "17倾向•状态•程度", "noun": "词干", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ほど/ほどの/ほどだ", "meaning": "几乎，简直", "level": "2级", "category": "程度", "conn": "名词·词干 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "信じられないほど、美しい。", "ex_cn": "美得令人难以置信。"}, {"id": 254, "unit": "17倾向•状态•程度", "noun": "", "na": "", "i": "", "verb": "", "pattern": "かと思うほど （句子）", "meaning": "好像，几乎", "level": "2级", "category": "程度", "conn": "（接続不限）", "ex_jp": "涙が出るかと思うほど、感動した。", "ex_cn": "感动得几乎要流泪。"}, {"id": 255, "unit": "17倾向•状态•程度", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "あがる", "meaning": "（加强语气，强调）", "level": "2级", "category": "程度", "conn": "动词·ます形", "ex_jp": "警官は犯人を捕まえあげた。", "ex_cn": "警察抓住了犯人。"}, {"id": 256, "unit": "17倾向•状态•程度", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "つ…つ…", "meaning": "时而…时而，一会…一会", "level": "1级", "category": "程度", "conn": "动词·ます形", "ex_jp": "行きつ戻りつ、道に迷った。", "ex_cn": "时而前进时而折返，迷了路。"}, {"id": 257, "unit": "17倾向•状态•程度", "noun": "词干", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "とばかり（に）", "meaning": "…似的", "level": "1级", "category": "程度", "conn": "名词·词干 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼はやめろとばかりに、手を振った。", "ex_cn": "他像在喊“停下”似的摆了摆手。"}, {"id": 258, "unit": "17倾向•状态•程度", "noun": "词干", "na": "", "i": "", "verb": "ます形", "pattern": "ながら", "meaning": "（保持原状）", "level": "1级", "category": "程度", "conn": "名词·词干 ／ 动词·ます形", "ex_jp": "彼はテレビを見ながら、食事した。", "ex_cn": "他一边看电视一边吃饭。"}, {"id": 259, "unit": "17倾向•状态•程度", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "んばかり", "meaning": "几乎要，差点要", "level": "1级", "category": "程度", "conn": "动词·ない形", "ex_jp": "彼は飛び上がらんばかりに、喜んだ。", "ex_cn": "他高兴得几乎要跳起来。"}, {"id": 260, "unit": "18主张•断定•决心", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "というものだ", "meaning": "真是，才是", "level": "2级", "category": "主张•断定", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "努力こそ、大切というものだ。", "ex_cn": "努力才是真正重要的。"}, {"id": 261, "unit": "18主张•断定•决心", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "にきまっている", "meaning": "一定，肯定", "level": "2级", "category": "主张•断定", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "約束は守るにきまっている。", "ex_cn": "约定肯定是要守的。"}, {"id": 262, "unit": "18主张•断定•决心", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "にすぎない", "meaning": "仅仅，只不过", "level": "2级", "category": "主张•断定", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "それは噂にすぎない。", "ex_cn": "那只不过是传闻。"}, {"id": 263, "unit": "18主张•断定•决心", "noun": "词干", "na": "", "i": "からに", "verb": "からに", "pattern": "にほかならない", "meaning": "只是，无非是", "level": "2级", "category": "主张•断定", "conn": "名词·词干 ／ イ形·からに ／ 动词·からに", "ex_jp": "彼の言葉は嘘にほかならない。", "ex_cn": "他的话无非是谎言。"}, {"id": 264, "unit": "18主张•断定•决心", "noun": "", "na": "", "i": "", "verb": "まい形", "pattern": "まい", "meaning": "不，不想", "level": "2级", "category": "主张•断定", "conn": "动词·まい形", "ex_jp": "もう二度と行くまい。", "ex_cn": "再也不去了。"}, {"id": 265, "unit": "18主张•断定•决心", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "よりほかはない/よりほかはにない", "meaning": "只有，只能", "level": "2级", "category": "主张•断定", "conn": "动词·原形", "ex_jp": "謝るよりほかはない。", "ex_cn": "只有道歉。"}, {"id": 266, "unit": "18主张•断定•决心", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "でなくてなんだろう", "meaning": "不是…那是什么呢!", "level": "1级", "category": "主张•断定", "conn": "名词·词干", "ex_jp": "これが愛でなくてなんだろう。", "ex_cn": "这不是爱，又是什么呢？"}, {"id": 267, "unit": "18主张•断定•决心", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "に（は）あたらない", "meaning": "没有必要，不用", "level": "1级", "category": "主张•断定", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "驚くにはあたらない。", "ex_cn": "不必惊讶。"}, {"id": 268, "unit": "18主张•断定•决心", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "までだ/までのことだ", "meaning": "只好…了，就完了", "level": "1级", "category": "主张•断定", "conn": "动词·原形", "ex_jp": "失敗しても、やり直すまでだ。", "ex_cn": "即使失败，也只是重来而已。"}, {"id": 269, "unit": "18主张•断定•决心", "noun": "", "na": "", "i": "", "verb": "ば/なら形", "pattern": "それまでだ", "meaning": "如果…的话，就完了/没意义了", "level": "1级", "category": "主张•断定", "conn": "动词·ば/なら形", "ex_jp": "ダメなら、それまでだ。", "ex_cn": "如果不行，就没意义了。"}, {"id": 270, "unit": "18主张•断定•决心", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "とされている", "meaning": "被视为，被看成", "level": "1级", "category": "主张•断定", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "彼は天才とされている。", "ex_cn": "他被视为天才。"}, {"id": 271, "unit": "18主张•断定•决心", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にかけても", "meaning": "以…发誓，用…打赌", "level": "2级", "category": "决心", "conn": "名词·词干", "ex_jp": "命にかけても、守る。", "ex_cn": "以性命发誓也要保护。"}, {"id": 272, "unit": "19否定•部分否定", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ことなく/こともなく", "meaning": "没…不…", "level": "2级", "category": "否定", "conn": "动词·原形", "ex_jp": "彼は休むことなく、働いた。", "ex_cn": "他不停地工作。"}, {"id": 273, "unit": "19否定•部分否定", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "っこない", "meaning": "不，不会（强烈否定）", "level": "2级", "category": "否定", "conn": "动词·ます形", "ex_jp": "そんなこと、ありっこない。", "ex_cn": "那种事不可能有。"}, {"id": 274, "unit": "19否定•部分否定", "noun": "词干", "na": "词干", "i": "原形", "verb": "原形", "pattern": "どころではない", "meaning": "根本谈不上", "level": "2级", "category": "否定", "conn": "名词·词干 ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "疲れていて、遊ぶどころではない。", "ex_cn": "累了，根本谈不上玩。"}, {"id": 275, "unit": "19否定•部分否定", "noun": "连体词", "na": "な形", "i": "原形", "verb": "原形", "pattern": "はずがない", "meaning": "不可能，没有可能性", "level": "2级", "category": "否定", "conn": "名词·连体词 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼が知っているはずがない。", "ex_cn": "他不可能知道。"}, {"id": 276, "unit": "19否定•部分否定", "noun": "", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ものか/もんか", "meaning": "哪能，难道", "level": "2级", "category": "否定", "conn": "ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "そんなこと、信じるものか。", "ex_cn": "那种事，哪能相信。"}, {"id": 277, "unit": "19否定•部分否定", "noun": "な形/である", "na": "な形", "i": "原形", "verb": "原形", "pattern": "わけがない/ないわけがない", "meaning": "不可能，不会/不是不可能，一定", "level": "2级", "category": "否定", "conn": "名词·な形/である ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼が知らないわけがない。", "ex_cn": "他不可能不知道。"}, {"id": 278, "unit": "19否定•部分否定", "noun": "原形", "na": "", "i": "", "verb": "こと", "pattern": "なしに/（こと）なしに", "meaning": "不/没…就", "level": "1级", "category": "否定", "conn": "名词·原形 ／ 动词·こと", "ex_jp": "目的なしに、行動しない。", "ex_cn": "没有目标就不行动。"}, {"id": 279, "unit": "19否定•部分否定", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "までもない", "meaning": "没有必要", "level": "1级", "category": "否定", "conn": "动词·原形", "ex_jp": "説明するまでもない。", "ex_cn": "没必要说明。"}, {"id": 280, "unit": "19否定•部分否定", "noun": "", "na": "", "i": "", "verb": "た形", "pattern": "〜ためしがない", "meaning": "从未", "level": "1级", "category": "否定", "conn": "动词·た形", "ex_jp": "彼が遅刻しないためしがない。", "ex_cn": "他从来没有不迟到过（总是迟到）。"}, {"id": 281, "unit": "19否定•部分否定", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "ずして", "meaning": "不…而…（同しないで）", "level": "1级", "category": "否定", "conn": "动词·ない形", "ex_jp": "努力せずして、成功しない。", "ex_cn": "不努力就不会成功。"}, {"id": 282, "unit": "19否定•部分否定", "noun": "", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ことは…が", "meaning": "是…但…", "level": "2级", "category": "部分否定", "conn": "ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "難しいことは難しいが、やる。", "ex_cn": "难是难，但要做。"}, {"id": 283, "unit": "19否定•部分否定", "noun": "だ形", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "というものではない/というものでもない", "meaning": "（也）并非，（也）未必", "level": "2级", "category": "部分否定", "conn": "名词·だ形 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "お金がすべてだというものではない。", "ex_cn": "钱并非一切。"}, {"id": 284, "unit": "19否定•部分否定", "noun": "词干", "na": "", "i": "", "verb": "ない形", "pattern": "ないことはない/ないこともない", "meaning": "不是不能，有可能", "level": "2级", "category": "部分否定", "conn": "名词·词干 ／ 动词·ない形", "ex_jp": "行かないこともない。", "ex_cn": "也不是不去（有可能去）。"}, {"id": 285, "unit": "19否定•部分否定", "noun": "", "na": "な形", "i": "原形", "verb": "原形", "pattern": "わけではない/わけでもない", "meaning": "未必，并非", "level": "2级", "category": "部分否定", "conn": "ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "嫌いなわけではない。", "ex_cn": "并非讨厌。"}, {"id": 286, "unit": "19否定•部分否定", "noun": "词干", "na": "", "i": "", "verb": "ない形", "pattern": "ないものでもない/ないでもない", "meaning": "并不是，也不是", "level": "1级", "category": "部分否定", "conn": "名词·词干 ／ 动词·ない形", "ex_jp": "考えないでもない。", "ex_cn": "也不是不考虑。"}, {"id": 287, "unit": "20可能性•不可能•困难•容易", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "得る", "meaning": "能，可能，可以", "level": "2级", "category": "可能性", "conn": "动词·ます形", "ex_jp": "そんなことはあり得る。", "ex_cn": "那种事是有可能的。"}, {"id": 288, "unit": "20可能性•不可能•困难•容易", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "がたい（形容词）", "meaning": "很难，难以", "level": "2级", "category": "可能性", "conn": "动词·ます形", "ex_jp": "信じがたい話だ。", "ex_cn": "难以置信的话。"}, {"id": 289, "unit": "20可能性•不可能•困难•容易", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "かねる", "meaning": "难，不能忍受", "level": "2级", "category": "可能性", "conn": "动词·ます形", "ex_jp": "お引き受けしかねます。", "ex_cn": "难以接受（恕难从命）。"}, {"id": 290, "unit": "20可能性•不可能•困难•容易", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "ようがない/ようもない", "meaning": "无法", "level": "2级", "category": "可能性", "conn": "动词·ます形", "ex_jp": "どうしようもない。", "ex_cn": "毫无办法。"}, {"id": 291, "unit": "20可能性•不可能•困难•容易", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "わけにはいかない/わけにもいかない", "meaning": "不能，不好，不可以", "level": "2级", "category": "可能性", "conn": "动词·原形", "ex_jp": "今日は行くわけにはいかない。", "ex_cn": "今天不能去。"}, {"id": 292, "unit": "20可能性•不可能•困难•容易", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にかたくない", "meaning": "不难，很容易", "level": "1级", "category": "可能性", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "彼が悲しむにかたくない。", "ex_cn": "不难想象他会悲伤。"}, {"id": 293, "unit": "20可能性•不可能•困难•容易", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にたえる/にたえない", "meaning": "（不）值得，经得起（经不起）", "level": "1级", "category": "可能性", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "この映画は鑑賞にたえる。", "ex_cn": "这部电影值得欣赏。"}, {"id": 294, "unit": "20可能性•不可能•困难•容易", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にたる（现代语に足りる）", "meaning": "值得（文言文）", "level": "1级", "category": "可能性", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "信頼にたる人物だ。", "ex_cn": "是值得信赖的人物。"}, {"id": 295, "unit": "21禁止•劝说•提醒", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ことだ", "meaning": "应该，最好是", "level": "2级", "category": "禁止•劝说•提醒", "conn": "动词·原形", "ex_jp": "毎日、規則正しく食べることだ。", "ex_cn": "应该每天规律饮食。"}, {"id": 296, "unit": "21禁止•劝说•提醒", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ことはない", "meaning": "不用，不必", "level": "2级", "category": "禁止•劝说•提醒", "conn": "动词·原形", "ex_jp": "そんなに急ぐことはない。", "ex_cn": "不必那么着急。"}, {"id": 297, "unit": "21禁止•劝说•提醒", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ものだ/ものではない", "meaning": "要/不要，应该/不该", "level": "2级", "category": "禁止•劝说•提醒", "conn": "动词·原形", "ex_jp": "子供は早く寝るものだ。", "ex_cn": "孩子应该早点睡。"}, {"id": 298, "unit": "21禁止•劝说•提醒", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ように", "meaning": "要", "level": "2级", "category": "禁止•劝说•提醒", "conn": "动词·原形", "ex_jp": "忘れないように、メモする。", "ex_cn": "为了不忘，做笔记。"}, {"id": 299, "unit": "21禁止•劝说•提醒", "noun": "である", "na": "である", "i": "くある", "verb": "原形", "pattern": "べき（べし为书面语）", "meaning": "应该，应当", "level": "2级", "category": "禁止•劝说•提醒", "conn": "名词·である ／ ナ形·である ／ イ形·くある ／ 动词·原形", "ex_jp": "学生は勉強すべきだ。", "ex_cn": "学生应该学习。"}, {"id": 300, "unit": "21禁止•劝说•提醒", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ベからず/ベからざる", "meaning": "不，禁止（文言文）", "level": "1级", "category": "禁止•劝说•提醒", "conn": "动词·原形", "ex_jp": "ここに入るべからず。", "ex_cn": "禁止进入此处。"}, {"id": 301, "unit": "22强调", "noun": "词干", "na": "", "i": "原形", "verb": "原形", "pattern": "くらい/ぐらい（最低程度）", "meaning": "最少，只，仅等", "level": "2级", "category": "强调（1)", "conn": "名词·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "笑えるくらい、楽しい。", "ex_cn": "开心得让人发笑。"}, {"id": 302, "unit": "22强调", "noun": "词干/で", "na": "", "i": "", "verb": "", "pattern": "さえ/でさえ（疑问词也可）", "meaning": "连，甚至", "level": "2级", "category": "强调（1)", "conn": "名词·词干/で", "ex_jp": "専門家でさえ、分からない。", "ex_cn": "连专家都不懂。"}, {"id": 303, "unit": "22强调", "noun": "数量词", "na": "", "i": "", "verb": "", "pattern": "として", "meaning": "没有（一次，一个等）", "level": "2级", "category": "强调（1)", "conn": "名词·数量词", "ex_jp": "一度として、遅刻したことがない。", "ex_cn": "一次也没有迟到过。"}, {"id": 304, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "なんか（自谦，对人说则轻蔑）", "meaning": "（など口语）轻视主语，可翻译为之类的", "level": "2级", "category": "强调（1)", "conn": "名词·词干", "ex_jp": "私なんか、まだまだです。", "ex_cn": "我这种人，还差得远呢。"}, {"id": 305, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "なんて", "meaning": "", "level": "2级", "category": "强调（1)", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "彼なんて、信じられない。", "ex_cn": "他那种人，无法相信。"}, {"id": 306, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "まで", "meaning": "连…都，甚至", "level": "2级", "category": "强调（1)", "conn": "名词·词干", "ex_jp": "子供まで、分かっている。", "ex_cn": "连孩子都懂。"}, {"id": 307, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "原形/て形", "pattern": "までして/てまで", "meaning": "甚至", "level": "2级", "category": "强调（1)", "conn": "名词·词干 ／ 动词·原形/て形", "ex_jp": "命を捨ててまで、守る価値はない。", "ex_cn": "不值得舍弃生命去保护。"}, {"id": 308, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "こそ（名词+助词也可）", "meaning": "...才/才是，正是", "level": "2级", "category": "强调（1)", "conn": "名词·词干", "ex_jp": "これこそ、本物だ。", "ex_cn": "这才是真货。"}, {"id": 309, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "あっての", "meaning": "有了…才", "level": "1级", "category": "强调（1)", "conn": "名词·词干", "ex_jp": "健康あっての生活だ。", "ex_cn": "有了健康，才有生活。"}, {"id": 310, "unit": "22强调", "noun": "数量词", "na": "", "i": "", "verb": "", "pattern": "からある/からの", "meaning": "达到，超过", "level": "1级", "category": "强调（1)", "conn": "名词·数量词", "ex_jp": "百人からの観客がいた。", "ex_cn": "有上百名观众。"}, {"id": 311, "unit": "22强调", "noun": "", "na": "词干", "i": "こと", "verb": "", "pattern": "極まる/極まりない（书面语）", "meaning": "极端，极限，极", "level": "1级", "category": "强调（1)", "conn": "ナ形·词干 ／ イ形·こと", "ex_jp": "失礼極まりない態度だ。", "ex_cn": "极其失礼的态度。"}, {"id": 312, "unit": "22强调", "noun": "词干/で", "na": "", "i": "", "verb": "", "pattern": "すら/ですら（同さえ）", "meaning": "连…也", "level": "1级", "category": "强调（1)", "conn": "名词·词干/で", "ex_jp": "名前すら、覚えていない。", "ex_cn": "连名字都没记住。"}, {"id": 313, "unit": "22强调", "noun": "数量词", "na": "", "i": "", "verb": "", "pattern": "たりとも（•••ない）（文言文）", "meaning": "即使…也", "level": "1级", "category": "强调（1)", "conn": "名词·数量词", "ex_jp": "一秒たりとも、油断できない。", "ex_cn": "一秒也不能疏忽。"}, {"id": 314, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "にして", "meaning": "连…也/都", "level": "1级", "category": "强调（1)", "conn": "名词·词干", "ex_jp": "彼にして、初めての経験だ。", "ex_cn": "连他都是第一次的经历。"}, {"id": 315, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "の至り", "meaning": "非常，至极", "level": "1级", "category": "强调（1)", "conn": "名词·词干", "ex_jp": "光栄の至りだ。", "ex_cn": "实在是光荣之至。"}, {"id": 316, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "のきわみ", "meaning": "…之至/之最，最，非常", "level": "1级", "category": "强调（1)", "conn": "名词·词干", "ex_jp": "贅沢の極みだ。", "ex_cn": "奢侈之至。"}, {"id": 317, "unit": "22强调", "noun": "であれ", "na": "であれ", "i": "ば形", "verb": "ば形", "pattern": "ばこそ", "meaning": "真因为…才", "level": "1级", "category": "强调（1)", "conn": "名词·であれ ／ ナ形·であれ ／ イ形·ば形 ／ 动词·ば形", "ex_jp": "行けばこそ、分かる。", "ex_cn": "正因为去了，才明白。"}, {"id": 318, "unit": "22强调", "noun": "数量词", "na": "", "i": "", "verb": "", "pattern": "というもの", "meaning": "整整", "level": "1级", "category": "强调（1)", "conn": "名词·数量词", "ex_jp": "三日というもの、寝続けた。", "ex_cn": "整整三天，一直在睡。"}, {"id": 319, "unit": "22强调", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "だに", "meaning": "连…都/也…", "level": "1级", "category": "强调（1)", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "彼の名前を聞くだに、怖い。", "ex_cn": "光是听到他的名字，就害怕。"}, {"id": 320, "unit": "22强调", "noun": "", "na": "", "i": "", "verb": "て形", "pattern": "てこそ", "meaning": "只有…才能", "level": "1级", "category": "强调（1)", "conn": "动词·て形", "ex_jp": "自分でやってこそ、分かる。", "ex_cn": "只有自己做了，才明白。"}, {"id": 321, "unit": "22强调", "noun": "词干", "na": "で形", "i": "く形", "verb": "ます形", "pattern": "こそあれ…ない/こそすれ…ない", "meaning": "只有…不会，虽然…但不", "level": "1级", "category": "强调（1)", "conn": "名词·词干 ／ ナ形·で形 ／ イ形·く形 ／ 动词·ます形", "ex_jp": "怒るこそあれ、恨みはない。", "ex_cn": "虽有生气，却无怨恨。"}, {"id": 322, "unit": "22强调", "noun": "", "na": "で形", "i": "く形", "verb": "て形", "pattern": "てしかたがない", "meaning": "…得不得了", "level": "2级", "category": "强调（2)", "conn": "ナ形·で形 ／ イ形·く形 ／ 动词·て形", "ex_jp": "悲しくてしかたがない。", "ex_cn": "悲伤得不得了。"}, {"id": 323, "unit": "22强调", "noun": "", "na": "で形", "i": "く形", "verb": "て形", "pattern": "てしようがない（同上，口语）", "meaning": "…得不得了，非常", "level": "2级", "category": "强调（2)", "conn": "ナ形·で形 ／ イ形·く形 ／ 动词·て形", "ex_jp": "眠くてしようがない。", "ex_cn": "困得不得了。"}, {"id": 324, "unit": "22强调", "noun": "", "na": "で形", "i": "く形", "verb": "て形", "pattern": "てたまらない", "meaning": "特别，非常，…得不得了", "level": "2级", "category": "强调（2)", "conn": "ナ形·で形 ／ イ形·く形 ／ 动词·て形", "ex_jp": "お腹が空いてたまらない。", "ex_cn": "饿得不得了。"}, {"id": 325, "unit": "22强调", "noun": "", "na": "で形", "i": "く形", "verb": "て形", "pattern": "てならない", "meaning": "非常，…得不得了", "level": "2级", "category": "强调（2)", "conn": "ナ形·で形 ／ イ形·く形 ／ 动词·て形", "ex_jp": "心配でならない。", "ex_cn": "非常担心。"}, {"id": 326, "unit": "22强调", "noun": "", "na": "", "i": "", "verb": "て形", "pattern": "てやまない/てやみません", "meaning": "万分，衷心（表感情深）", "level": "2级", "category": "强调（2)", "conn": "动词·て形", "ex_jp": "成功を祈ってやまない。", "ex_cn": "衷心祈祷成功。"}, {"id": 327, "unit": "22强调", "noun": "词干", "na": "", "i": "原形", "verb": "原形", "pattern": "といったらない/といったらありはしない/といったらありやしない", "meaning": "太，之极，无比", "level": "1级", "category": "强调（2)", "conn": "名词·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "嬉しいといったらない。", "ex_cn": "高兴得不得了。"}, {"id": 328, "unit": "23限定", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "いっぽうだ", "meaning": "越来越，不断", "level": "2级", "category": "限定", "conn": "动词·原形", "ex_jp": "物価は上がる一方だ。", "ex_cn": "物价不断上涨。"}, {"id": 329, "unit": "23限定", "noun": "の形", "na": "", "i": "", "verb": "原形", "pattern": "限りでは", "meaning": "据，通过", "level": "2级", "category": "限定", "conn": "名词·の形 ／ 动词·原形", "ex_jp": "私の知る限りでは、彼は正直だ。", "ex_cn": "据我所知，他是诚实的。"}, {"id": 330, "unit": "23限定", "noun": "词干", "na": "", "i": "", "verb": "ます形", "pattern": "きり", "meaning": "仅，只，一直", "level": "2级", "category": "限定", "conn": "名词·词干 ／ 动词·ます形", "ex_jp": "彼は一言きり、言わなかった。", "ex_cn": "他只说了一句话。"}, {"id": 331, "unit": "23限定", "noun": "词干/で", "na": "", "i": "", "verb": "", "pattern": "しか…ない", "meaning": "仅，只，只有", "level": "2级", "category": "限定", "conn": "名词·词干/で", "ex_jp": "彼しか、知らない。", "ex_cn": "只知道他。"}, {"id": 332, "unit": "23限定", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "しかない", "meaning": "只好", "level": "2级", "category": "限定", "conn": "动词·原形", "ex_jp": "待つしかない。", "ex_cn": "只能等。"}, {"id": 333, "unit": "23限定", "noun": "词干", "na": "な形", "i": "原形", "verb": "原形", "pattern": "だけ", "meaning": "仅，只", "level": "2级", "category": "限定", "conn": "名词·词干 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "彼だけが、知っている。", "ex_cn": "只有他知道。"}, {"id": 334, "unit": "23限定", "noun": "", "na": "", "i": "", "verb": "原形", "pattern": "ばかりだ", "meaning": "越来越，愈加", "level": "2级", "category": "限定", "conn": "动词·原形", "ex_jp": "病気は悪化するばかりだ。", "ex_cn": "病情不断恶化。"}, {"id": 335, "unit": "23限定", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "を限りに", "meaning": "从…开始，以…为限", "level": "1级", "category": "限定", "conn": "名词·词干", "ex_jp": "今日を限りに、タバコをやめる。", "ex_cn": "以今天为限，戒烟。"}, {"id": 336, "unit": "23限定", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "ならでは", "meaning": "只有…才能/才有", "level": "1级", "category": "限定", "conn": "名词·词干", "ex_jp": "京都ならではの味だ。", "ex_cn": "是京都特有的味道。"}, {"id": 337, "unit": "23限定", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をおいて", "meaning": "只有，除了…没有其它", "level": "1级", "category": "限定", "conn": "名词·词干", "ex_jp": "彼をおいて、適任者はいない。", "ex_cn": "除了他，没有合适的人选。"}, {"id": 338, "unit": "23限定", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "というと/はというと/といったら", "meaning": "说道，提起", "level": "2级", "category": "话题•当然", "conn": "名词·词干", "ex_jp": "旅行というと、海外がいい。", "ex_cn": "说起旅行，海外最好。"}, {"id": 339, "unit": "23限定", "noun": "词干", "na": "", "i": "原形", "verb": "原形", "pattern": "といえば", "meaning": "说起，提到", "level": "2级", "category": "话题•当然", "conn": "名词·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "日本といえば、富士山だ。", "ex_cn": "提起日本，就是富士山。"}, {"id": 340, "unit": "23限定", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "とは/というのは", "meaning": "所谓", "level": "2级", "category": "话题•当然", "conn": "名词·词干", "ex_jp": "友情とは、何だろう。", "ex_cn": "所谓友情，是什么呢？"}, {"id": 341, "unit": "23限定", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "というものは/ということは", "meaning": "真…啊，事情", "level": "2级", "category": "话题•当然", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "努力というものは、大切だ。", "ex_cn": "努力是很重要的事。"}, {"id": 342, "unit": "23限定", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "にかけては/にかけたら", "meaning": "在…方面，关于", "level": "2级", "category": "话题•当然", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "料理にかけては、彼女が一番だ。", "ex_cn": "在烹饪方面，她最强。"}, {"id": 343, "unit": "23限定", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "ときたら", "meaning": "说道，提起", "level": "1级", "category": "话题•当然", "conn": "名词·词干", "ex_jp": "あの子ときたら、じゃまばかりだ。", "ex_cn": "说起那孩子，净添乱。"}, {"id": 344, "unit": "23限定", "noun": "である", "na": "词干", "i": "原形", "verb": "原形", "pattern": "にこしたことはない", "meaning": "最好", "level": "1级", "category": "话题•当然", "conn": "名词·である ／ ナ形·词干 ／ イ形·原形 ／ 动词·原形", "ex_jp": "早いにこしたことはない。", "ex_cn": "早一点最好。"}, {"id": 345, "unit": "25强制", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "ざるをえない", "meaning": "不得不，不禁", "level": "2级", "category": "强制", "conn": "动词·ない形", "ex_jp": "行かざるをえない。", "ex_cn": "不得不去。"}, {"id": 346, "unit": "25强制", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "ずにはいられない/ないではいられない", "meaning": "不由得，忍不住，不能不", "level": "2级", "category": "强制", "conn": "动词·ない形", "ex_jp": "笑わずにはいられない。", "ex_cn": "忍不住笑。"}, {"id": 347, "unit": "25强制", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "ずにはおかない/ないではおかない", "meaning": "肯定会，一定要，不能不", "level": "1级", "category": "强制", "conn": "动词·ない形", "ex_jp": "言わずにはおかない。", "ex_cn": "一定会说出口。"}, {"id": 348, "unit": "25强制", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "ずにはすまない/ないではすまない", "meaning": "不得不，不能不", "level": "1级", "category": "强制", "conn": "动词·ない形", "ex_jp": "謝らずにはすまない。", "ex_cn": "不得不道歉。"}, {"id": 349, "unit": "25强制", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "を禁じ得ない", "meaning": "不禁，不能不，情不自禁", "level": "1级", "category": "强制", "conn": "名词·词干", "ex_jp": "彼の涙を見て、同情を禁じ得ない。", "ex_cn": "看到他的眼泪，不禁同情。"}, {"id": 350, "unit": "25强制", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "をよぎなくさせる/をよぎなくされる", "meaning": "不得不，不得已", "level": "1级", "category": "强制", "conn": "名词·词干", "ex_jp": "事故が、計画の変更を余儀なくさせた。", "ex_cn": "事故迫使计划改变。"}, {"id": 351, "unit": "26感叹•愿望", "noun": "", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ことか/ことだろう", "meaning": "多么，太", "level": "2级", "category": "感叹•愿望", "conn": "ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "寂しいことか。", "ex_cn": "多么寂寞啊。"}, {"id": 352, "unit": "26感叹•愿望", "noun": "", "na": "な形", "i": "原形", "verb": "", "pattern": "ことだ", "meaning": "太，真", "level": "2级", "category": "感叹•愿望", "conn": "ナ形·な形 ／ イ形·原形", "ex_jp": "美しいことだ。", "ex_cn": "真美啊。"}, {"id": 353, "unit": "26感叹•愿望", "noun": "", "na": "な形", "i": "原形", "verb": "た形", "pattern": "ことに（は）", "meaning": "令人…的是", "level": "2级", "category": "感叹•愿望", "conn": "ナ形·な形 ／ イ形·原形 ／ 动词·た形", "ex_jp": "驚いたことに、彼が来た。", "ex_cn": "令人惊讶的是，他来了。"}, {"id": 354, "unit": "26感叹•愿望", "noun": "", "na": "", "i": "", "verb": "ます形", "pattern": "たいものだ", "meaning": "真想，希望", "level": "2级", "category": "感叹•愿望", "conn": "动词·ます形", "ex_jp": "一度、富士山に登りたいものだ。", "ex_cn": "真想登一次富士山。"}, {"id": 355, "unit": "26感叹•愿望", "noun": "", "na": "", "i": "", "verb": "ない形", "pattern": "ないものか", "meaning": "真想，要是…就好了", "level": "2级", "category": "感叹•愿望", "conn": "动词·ない形", "ex_jp": "早く春が来ないものか。", "ex_cn": "春天真能早点来吗。"}, {"id": 356, "unit": "26感叹•愿望", "noun": "", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ものだ", "meaning": "真…啊", "level": "2级", "category": "感叹•愿望", "conn": "ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "時間は早く過ぎるものだ。", "ex_cn": "时间过得真快啊。"}, {"id": 357, "unit": "26感叹•愿望", "noun": "", "na": "な形", "i": "原形", "verb": "原形", "pattern": "ものがある", "meaning": "确定是，实在是", "level": "2级", "category": "感叹•愿望", "conn": "ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "この写真には、悲しいものがある。", "ex_cn": "这张照片确有悲伤之处。"}, {"id": 358, "unit": "26感叹•愿望", "noun": "だ形", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "とは", "meaning": "没想到", "level": "1级", "category": "感叹•愿望", "conn": "名词·だ形 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "まさか、彼が犯人とは。", "ex_cn": "没想到他竟是犯人。"}, {"id": 359, "unit": "26感叹•愿望", "noun": "だ形", "na": "だ形", "i": "原形", "verb": "原形", "pattern": "といい", "meaning": "…就好了", "level": "1级", "category": "感叹•愿望", "conn": "名词·だ形 ／ ナ形·だ形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "雨が止むといい。", "ex_cn": "雨停了就好了。"}, {"id": 360, "unit": "27评价的视点", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "としては", "meaning": "从…立场，对于…来说", "level": "2级", "category": "视点", "conn": "名词·词干", "ex_jp": "彼としては、妥当な判断だ。", "ex_cn": "对他来说是妥当的判断。"}, {"id": 361, "unit": "27评价的视点", "noun": "词干", "na": "词干", "i": "", "verb": "原形", "pattern": "にしては", "meaning": "作为…来说，（不用自身）", "level": "2级", "category": "视点", "conn": "名词·词干 ／ ナ形·词干 ／ 动词·原形", "ex_jp": "子供にしては、よくできる。", "ex_cn": "作为孩子，做得很好。"}, {"id": 362, "unit": "27评价的视点", "noun": "の形", "na": "な形", "i": "原形", "verb": "原形", "pattern": "わりに（は）", "meaning": "虽然…但是", "level": "2级", "category": "视点", "conn": "名词·の形 ／ ナ形·な形 ／ イ形·原形 ／ 动词·原形", "ex_jp": "値段のわりに、美味しい。", "ex_cn": "与价格相比，很好吃。"}, {"id": 363, "unit": "27评价的视点", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "〜にしてみれば/にしてみたら", "meaning": "对于…来说，在…看来", "level": "2级", "category": "视点", "conn": "名词·词干", "ex_jp": "私にしてみれば、当然だ。", "ex_cn": "在我看来是理所当然的。"}, {"id": 364, "unit": "27评价的视点", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "向きに/向きの/向きだ", "meaning": "面向，适合于，朝", "level": "2级", "category": "视点", "conn": "名词·词干", "ex_jp": "初心者向きの本だ。", "ex_cn": "是适合初学者的书。"}, {"id": 365, "unit": "27评价的视点", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "たる＋名词（书面语）", "meaning": "作为，身为", "level": "1级", "category": "视点", "conn": "名词·词干", "ex_jp": "指導者たる者、責任を持つべきだ。", "ex_cn": "身为领导者，当有责任感。"}, {"id": 366, "unit": "27评价的视点", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "ともなると/ともなれば", "meaning": "要是…的话", "level": "1级", "category": "视点", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "春ともなると、暖かくなる。", "ex_cn": "一到春天，就变暖和。"}, {"id": 367, "unit": "27评价的视点", "noun": "词干", "na": "", "i": "", "verb": "原形", "pattern": "まじき", "meaning": "不应有，不该有", "level": "1级", "category": "视点", "conn": "名词·词干 ／ 动词·原形", "ex_jp": "学生あるまじき行動だ。", "ex_cn": "是学生不该有的行为。"}, {"id": 368, "unit": "27评价的视点", "noun": "词干", "na": "", "i": "", "verb": "", "pattern": "ともあろう＋名词", "meaning": "身为/作为…竟然", "level": "1级", "category": "视点", "conn": "名词·词干", "ex_jp": "大人ともあろう人が、泣くとは。", "ex_cn": "身为大人，竟然会哭。"}];
+
+const LS_KEY = 'jp1_2_grammar_marks_v1';
+let marks = loadMarks();
+const state = { idx:0, filtered:[], levels:new Set(), categories:new Set(), units:new Set(), mode:'all', search:'', view:'card', listStatus:'all' };
+let autoSpeak = false;
+let curPattern = '';
+let curWord = '';
+let curId = 0;
+let flipped = false;
+
+let audioEl = null;
+
+// 停止当前正在播放的本地语音（翻面/切换时先停上一个，避免重叠）
+function stopAudio(){ if(audioEl){ try{ audioEl.pause(); audioEl.currentTime = 0; }catch(e){} } }
+
+// 仅使用本地合成的自然语音（微软 Nanami 神经音），不加载系统语音、不调用云端接口，避免机械音
+
+function onLocalMiss(){
+  const t = document.getElementById('toast');
+  if(t){ t.textContent = '本张暂无本地语音文件（请确认与 audio 文件夹放在一起）'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2400); }
+  else console.warn('local audio missing for id', curId);
+}
+function speak(text, kind){
+  if(!text) return;
+  stopAudio(); // 先停掉上一个读音，避免重叠
+  // 仅播放本地自然语音：例句 audio/001.mp3 … 368.mp3；单词 audio/w/001.mp3 …，不回退机械音或云端
+  if(kind==='word'){ playLocalWord(curId, onLocalMiss); return; }
+  playLocalFile(curId, onLocalMiss);
+}
+function playLocalWord(id, fallback){
+  if(!id || typeof Audio==='undefined'){ fallback(); return; }
+  try{
+    if(!audioEl){ audioEl = new Audio(); }
+    if(!audioEl){ fallback(); return; }
+    let done = false;
+    audioEl.onerror = ()=>{ if(!done){ done = true; fallback(); } };
+    audioEl.src = 'audio/w/' + String(id).padStart(3,'0') + '.mp3';
+    const p = audioEl.play();
+    if(p && p.catch) p.catch(()=>{ if(!done){ done = true; fallback(); } });
+  }catch(e){ fallback(); }
+}
+function playLocalFile(id, fallback){
+  if(!id || typeof Audio==='undefined'){ fallback(); return; }
+  try{
+    if(!audioEl){ audioEl = new Audio(); }
+    if(!audioEl){ fallback(); return; }
+    let done = false;
+    audioEl.onerror = ()=>{ if(!done){ done = true; fallback(); } };
+    audioEl.src = 'audio/' + String(id).padStart(3,'0') + '.mp3';
+    const p = audioEl.play();
+    if(p && p.catch) p.catch(()=>{ if(!done){ done = true; fallback(); } });
+  }catch(e){ fallback(); }
+}
+
+function loadMarks(){
+  try{
+    const m = JSON.parse(localStorage.getItem(LS_KEY))||{};
+    // 旧三态里的 'mastered' 合并回 'known'（认识=已掌握）
+    Object.keys(m).forEach(k=>{ if(m[k]==='mastered') m[k]='known'; });
+    return m;
+  }catch(e){ return {}; }
+}
+function saveMarks(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(marks)); }catch(e){} }
+function exportMarks(){
+  const payload = { app:'jp-grammar-flashcards', version:1, exportedAt:new Date().toISOString(), marks:marks };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = new Date(), pad = n=>String(n).padStart(2,'0');
+  const name = '日语语法进度_'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'.json';
+  a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  const known = Object.values(marks).filter(v=>v==='known').length;
+  const unknown = Object.values(marks).filter(v=>v==='unknown').length;
+  alert('已导出进度文件：'+name+'\n（含 '+Object.keys(marks).length+' 张标记：认识 '+known+' · 不认识 '+unknown+'）\n可保存到网盘/发给其他设备，再用“导入进度”恢复。');
+}
+function importMarks(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      const incoming = (data && data.marks && typeof data.marks==='object') ? data.marks
+                     : (data && typeof data==='object') ? data : null;
+      if(!incoming){ alert('文件格式无法识别，请选择本应用导出的进度文件。'); return; }
+      const ids = Object.keys(incoming).filter(k=>incoming[k]==='known'||incoming[k]==='unknown'||incoming[k]==='mastered');
+      if(ids.length===0){ alert('该进度文件为空，没有可导入的内容。'); return; }
+      const hasExisting = Object.keys(marks).length>0;
+      const merge = hasExisting ? confirm('检测到当前已有进度。\n点“确定”=把文件进度合并进来（同卡片以文件为准）；\n点“取消”=用文件进度覆盖当前全部进度。') : true;
+      const target = (merge) ? marks : (marks={});
+      ids.forEach(k=>{ target[k] = (incoming[k]==='mastered') ? 'known' : incoming[k]; });
+      if(!merge) marks = target;
+      saveMarks(); refresh();
+      const known = Object.values(marks).filter(v=>v==='known').length;
+      const unknown = Object.values(marks).filter(v=>v==='unknown').length;
+      alert('进度导入成功！\n当前共标记 '+Object.keys(marks).length+' 张：认识 '+known+' · 不认识 '+unknown);
+    }catch(err){ alert('读取失败：'+err.message); }
+  };
+  reader.readAsText(file);
+}
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lv = d => (d.level||'').trim();
+const cat = d => (d.category||'').trim() || '未分类';
+const unit = d => (d.unit||'').trim() || '未分类';
+const meaning = d => (d.meaning||'').trim() || '（暂无释义）';
+
+// 句型清洗：去掉（注释）、取第一个变体、去〜/＋名词等 → 得到"单词"本体
+function cleanPattern(p){
+  return String(p==null?'':p)
+    .replace(/[（(〔【].*?[）)〕】]/g,'')
+    .split(/[\/、／]/)[0]
+    .replace(/^[〜～~]/, '')
+    .replace(/＋.*$/, '')
+    .replace(/[…⋯]/g,'')
+    .trim();
+}
+// 单元显示名：如 "1目的•原因•理由" → "第1单元 · 目的•原因•理由"
+function unitLabel(u){
+  const n=parseInt(u,10);
+  if(isNaN(n)) return '第'+u+'单元';
+  const rest=String(u).replace(/^\d+/,'').replace(/^[·•]/, '');
+  return '第'+n+'单元' + (rest ? ' · '+rest : '');
+}
+// 例句中高亮语法词（返回安全 HTML；片假名归一化后最长优先匹配）
+function kataToHira(s){ return s.replace(/[\u30a1-\u30f6]/g, ch => String.fromCharCode(ch.charCodeAt(0)-0x60)); }
+function hlPattern(sentence, pattern){
+  sentence = String(sentence==null?'':sentence);
+  pattern = String(pattern==null?'':pattern);
+  if(!sentence || !pattern) return esc(sentence);
+  let norm='', map=[];
+  for(let i=0;i<sentence.length;i++){
+    const c=sentence[i];
+    if(c>='ァ' && c<='ヶ'){ norm += kataToHira(c); map.push(i); }
+    else { norm += c; map.push(i); }
+  }
+  const clean = cleanPattern(pattern);
+  const cands = clean.split(/[\/、／]/).filter(Boolean).map(v=>v.trim()).filter(Boolean);
+  const BAD = new Set(['は','に','を','が','で','と','も','の','へ','か','ね','よ','な','や','だ','です','ます','ない','こと']);
+  const extra=[];
+  cands.forEach(c=>{ c.split(/[…⋯〜～]/).forEach(p=>{ p=p.trim(); if(p.length>=2 && !BAD.has(p) && !cands.includes(p)) extra.push(p); }); });
+  extra.forEach(p=>cands.push(p));
+  const uniq=[...new Set(cands)].sort((a,b)=>b.length-a.length);
+  let hit=null;
+  for(const c of uniq){
+    const nc=kataToHira(c);
+    const idx=norm.indexOf(nc);
+    if(idx>=0){ hit={nc, len:nc.length}; break; }
+  }
+  if(!hit) return esc(sentence);
+  const ranges=[];
+  let from=0;
+  while(from < norm.length){
+    const i=norm.indexOf(hit.nc, from);
+    if(i<0) break;
+    ranges.push([map[i], map[i+hit.len-1]+1]);
+    from = i + hit.len;
+  }
+  let html='', pos=0;
+  ranges.forEach(([a,b])=>{
+    html += esc(sentence.slice(pos,a)) + '<mark>' + esc(sentence.slice(a,b)) + '</mark>';
+    pos = b;
+  });
+  html += esc(sentence.slice(pos));
+  return html;
+}
+const curSpeakText = () => flipped ? curWord : curPattern;
+
+// build filter dropdowns
+(function initFilters(){
+  const cats=[...new Set(DATA.map(cat))].sort();
+  const uns=[...new Set(DATA.map(unit))].sort((a,b)=>{
+    const na=parseInt(a), nb=parseInt(b); return (isNaN(na)||isNaN(nb))? a.localeCompare(b):na-nb;
+  });
+  buildChecks('lvChecks', ['1级','2级'], state.levels, null, 'lv');
+  buildChecks('catChecks', cats, state.categories, null, 'cat');
+  buildChecks('unitChecks', uns, state.units, unitLabel, 'unit');
+})();
+
+function buildChecks(containerId, values, set, labelFn, setKey){
+  const c=$(containerId); if(!c) return; c.innerHTML='';
+  values.forEach(v=>{
+    const lab=document.createElement('label'); lab.className='chk';
+    const cb=document.createElement('input'); cb.type='checkbox'; cb.value=v; cb.dataset.set=setKey;
+    const span=document.createElement('span'); span.textContent = labelFn ? labelFn(v) : v;
+    lab.appendChild(cb); lab.appendChild(span); c.appendChild(lab);
+  });
+}
+function syncSummary(){
+  const lv = state.levels.size ? [...state.levels].join('·') : '全部';
+  const ct = state.categories.size ? [...state.categories].join('·') : '全部';
+  const un = state.units.size ? [...state.units].map(unitLabel).join('·') : '全部';
+  if($('lvSum')) $('lvSum').textContent='级别：'+lv;
+  if($('catSum')) $('catSum').textContent='分类：'+ct;
+  if($('unitSum')) $('unitSum').textContent='单元：'+un;
+}
+
+function buildFiltered(){
+  const q = state.search.trim().toLowerCase();
+  let list = DATA.filter(d=>{
+    if(state.levels.size && !state.levels.has(lv(d))) return false;
+    if(state.categories.size && !state.categories.has(cat(d))) return false;
+    if(state.units.size && !state.units.has(unit(d))) return false;
+    if(state.mode==='unmastered' && marks[d.id]==='known') return false;
+    if(state.mode==='mastered' && marks[d.id]!=='known') return false;
+    if(q && !((d.pattern||'').toLowerCase().includes(q) || meaning(d).toLowerCase().includes(q) || (d.ex_jp||'').toLowerCase().includes(q) || (d.ex_cn||'').toLowerCase().includes(q) || (d.conn||'').toLowerCase().includes(q) || String(d.id)===q)) return false;
+    return true;
+  });
+  if(state.mode==='shuffle'){ list = list.slice().sort(()=>Math.random()-0.5); }
+  else { list.sort((a,b)=>a.id-b.id); }
+  state.filtered = list;
+  if(state.idx >= list.length) state.idx = Math.max(0, list.length-1);
+  if(state.idx < 0) state.idx = 0;
+}
+
+function badges(d, front){
+  const b=[];
+  b.push(`<span class="badge id">#${d.id}</span>`);
+  const l=lv(d); if(l==='1级') b.push(`<span class="badge lv1">1级</span>`); else if(l==='2级') b.push(`<span class="badge lv2">2级</span>`);
+  b.push(`<span class="badge">${esc(unitLabel(unit(d)))}</span>`);
+  b.push(`<span class="badge">${esc(cat(d))}</span>`);
+  if(marks[d.id]==='known') b.unshift(`<span class="badge mastered">✓ 已掌握</span>`);
+  return b.join('');
+}
+
+function render(){
+  const list = state.filtered;
+  const empty = $('emptyMsg');
+  if(list.length===0){
+    $('card').style.display='none';
+    if(empty) empty.style.display='';
+    $('pos').textContent='0 / 0'; updateStats(); return;
+  }
+  if(empty) empty.style.display='none';
+  $('card').style.display='';
+  const d = list[state.idx];
+  $('fBadges').innerHTML = badges(d);
+  $('fExJp').innerHTML = hlPattern(d.ex_jp || '', d.pattern);
+  $('fExCn').innerHTML = esc(d.ex_cn || '');
+  $('fPatternHint').innerHTML = '句型：' + esc(d.pattern) + ' ｜ 接続：' + esc(d.conn||'（不限）');
+  $('bBadges').innerHTML = badges(d);
+  $('bWord').innerHTML = esc(cleanPattern(d.pattern));
+  $('bMeaning').innerHTML = esc(meaning(d));
+  $('bConn').innerHTML = '接続：' + esc(d.conn||'（不限）');
+  $('bPatternFoot').innerHTML = '句型：' + esc(d.pattern);
+  $('pos').textContent = (state.idx+1) + ' / ' + list.length;
+  $('card').classList.remove('flipped');
+  $('card').classList.toggle('mastered', marks[d.id]==='known');
+  $('btnOk').classList.toggle('active', marks[d.id]==='known');
+  $('btnBad').classList.toggle('active', marks[d.id]==='unknown');
+  flipped = false;
+  curId = d.id || 0;
+  curPattern = (d.ex_jp && d.ex_jp.trim()) ? d.ex_jp : (d.pattern || '');
+  curWord = cleanPattern(d.pattern);
+  if(autoSpeak) speak(curPattern, 'sentence');
+  updateStats();
+}
+
+function updateStats(){
+  const list = state.filtered || [];
+  let ok=0, bad=0;
+  list.forEach(d=>{ if(marks[d.id]==='known') ok++; else if(marks[d.id]==='unknown') bad++; });
+  const total=list.length;
+  $('sOk').textContent=ok; $('sBad').textContent=bad;
+  $('sNew').textContent=Math.max(0,total-ok-bad);
+  const pct=total? Math.round(ok/total*100):0; $('sPct').textContent=pct+'%'; $('bar').style.width=pct+'%';
+}
+
+function flip(){
+  flipped = !flipped;
+  $('card').classList.toggle('flipped');
+  // 自动朗读模式：翻面立即朗读当前面（并已在 speak 内停掉上一个）
+  if(autoSpeak) speak(curSpeakText(), flipped ? 'word' : 'sentence');
+}
+function next(){ if(state.filtered.length===0) return; state.idx=(state.idx+1)%state.filtered.length; render(); }
+function prev(){ if(state.filtered.length===0) return; state.idx=(state.idx-1+state.filtered.length)%state.filtered.length; render(); }
+
+// 根据当前视图刷新（筛选/搜索/模式/标记变化后统一入口）
+function refresh(){
+  buildFiltered();
+  if(state.view==='list'){ renderList(); } else { render(); }
+}
+// 闪卡 / 列表 视图切换
+function switchView(v){
+  state.view = v;
+  $('viewCard').classList.toggle('primary', v==='card');
+  $('viewCard').classList.toggle('ghost', v!=='card');
+  $('viewList').classList.toggle('primary', v==='list');
+  $('viewList').classList.toggle('ghost', v!=='list');
+  $('sceneCard').style.display = (v==='card') ? '' : 'none';
+  $('sceneList').style.display = (v==='list') ? '' : 'none';
+  document.querySelector('.markrow').style.display = (v==='card') ? '' : 'none';
+  document.querySelector('.nav').style.display = (v==='card') ? '' : 'none';
+  if(v==='list') renderList(); else render();
+}
+// 列表视图：每项仅显示 句型 + 意思 + 状态圆点，点击跳转对应闪卡
+function renderList(){
+  const list = state.filtered || [];
+  const status = state.listStatus;
+  const st = d => (marks[d.id]==='known') ? 'known' : (marks[d.id]==='unknown') ? 'unknown' : 'new';
+  const items = list.map((d,i)=>({d,i})).filter(x=> status==='all' || st(x.d)===status);
+  const label = {known:'认识', unknown:'不认识', new:'未学'};
+  $('listCount').textContent = '共 '+items.length+' 张' + (status==='all' ? '' : '（'+label[status]+'）');
+  $('listContainer').innerHTML = items.map(x=>{
+    const s = st(x.d);
+    return '<div class="litem" data-idx="'+x.i+'">'
+      + '<span class="dot '+s+'"></span>'
+      + '<span class="lp">'+esc(x.d.pattern)+'</span>'
+      + '<span class="lm">'+esc(meaning(x.d))+'</span>'
+      + '</div>';
+  }).join('');
+}
+
+function mark(val){
+  const d = state.filtered[state.idx];
+  if(!d) return;
+  marks[d.id]=val; saveMarks();
+  if(state.mode==='unmastered' && val==='known'){
+    state.filtered.splice(state.idx,1);
+    if(state.idx>=state.filtered.length) state.idx=Math.max(0,state.filtered.length-1);
+  } else {
+    next();
+  }
+  render();
+}
+
+// events
+$('card').addEventListener('click', flip);
+$('flipBtn').addEventListener('click', e=>{ e.stopPropagation(); flip(); });
+$('nextBtn').addEventListener('click', next);
+$('prevBtn').addEventListener('click', prev);
+$('btnOk').addEventListener('click', e=>{ e.stopPropagation(); mark('known'); });
+$('btnBad').addEventListener('click', e=>{ e.stopPropagation(); mark('unknown'); });
+$('search').addEventListener('input', e=>{ state.search=e.target.value; state.idx=0; refresh(); });
+document.querySelector('.toolbar').addEventListener('change', e=>{
+  const cb=e.target.closest('input[type=checkbox][data-set]'); if(!cb) return;
+  const set = cb.dataset.set==='lv' ? state.levels : cb.dataset.set==='cat' ? state.categories : state.units;
+  if(cb.checked) set.add(cb.value); else set.delete(cb.value);
+  state.idx=0; syncSummary(); refresh();
+});
+$('clearFilters').addEventListener('click', ()=>{
+  state.levels.clear(); state.categories.clear(); state.units.clear();
+  document.querySelectorAll('.toolbar input[type=checkbox][data-set]').forEach(cb=>cb.checked=false);
+  state.idx=0; syncSummary(); refresh();
+});
+$('mode').addEventListener('change', e=>{ state.mode=e.target.value; state.idx=0; refresh(); });
+$('shuffleBtn').addEventListener('click', ()=>{ state.filtered = state.filtered.slice().sort(()=>Math.random()-0.5); state.idx=0; refresh(); });
+$('speakBtn').addEventListener('click', e=>{ e.stopPropagation(); speak(curSpeakText(), flipped?'word':'sentence'); });
+$('autoSpeak').addEventListener('change', e=>{ autoSpeak = e.target.checked; if(autoSpeak) speak(curSpeakText(), flipped?'word':'sentence'); });
+// 语音部分：仅本地自然语音，无云端 / 系统语音切换控件
+$('resetBtn').addEventListener('click', ()=>{ if(confirm('确定要清空所有“认识/不认识”的标记吗？此操作不可撤销。')){ marks={}; saveMarks(); refresh(); } });
+$('exportBtn').addEventListener('click', exportMarks);
+$('importBtn').addEventListener('click', ()=> $('importFile').click());
+$('importFile').addEventListener('change', e=>{ const f=e.target.files&&e.target.files[0]; if(f) importMarks(f); e.target.value=''; });
+
+// 打赏弹窗
+$('donateBtn').addEventListener('click', ()=>{ stopAudio(); $('donateModal').classList.add('open'); });
+$('donateClose').addEventListener('click', ()=> $('donateModal').classList.remove('open'));
+$('donateModal').addEventListener('click', e=>{ if(e.target.id==='donateModal') $('donateModal').classList.remove('open'); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') $('donateModal').classList.remove('open'); });
+// 点击二维码可新标签页全屏放大查看
+$('qrAlipay').addEventListener('click', ()=>window.open('donate/alipay.jpg','_blank'));
+$('qrWechat').addEventListener('click', ()=>window.open('donate/wechat.jpg','_blank'));
+
+// 视图切换：闪卡 / 列表
+$('viewCard').addEventListener('click', ()=> switchView('card'));
+$('viewList').addEventListener('click', ()=> switchView('list'));
+$('listTabs').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-s]'); if(!b) return;
+  state.listStatus = b.dataset.s;
+  Array.from($('listTabs').children).forEach(x=>x.classList.toggle('active', x===b));
+  renderList();
+});
+$('listContainer').addEventListener('click', e=>{
+  const it = e.target.closest('.litem'); if(!it) return;
+  state.idx = parseInt(it.dataset.idx,10) || 0;
+  switchView('card');
+});
+
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT') return;
+  if(state.view==='list') return;
+  if(e.key===' '){ e.preventDefault(); flip(); }
+  else if(e.key==='ArrowRight'){ e.preventDefault(); next(); }
+  else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
+  else if(e.key==='k'||e.key==='K'){ mark('known'); }
+  else if(e.key==='j'||e.key==='J'){ mark('unknown'); }
+  else if(e.key==='s'||e.key==='S'){ speak(curSpeakText(), flipped?'word':'sentence'); }
+});
+
+try{
+  refresh();
+}catch(err){
+  const em = $('emptyMsg');
+  if(em){ em.style.display=''; em.textContent = '出错了：' + (err && err.message ? err.message : err); }
+  else { const sc = document.querySelector('.scene'); if(sc) sc.innerHTML = '<div class="empty">出错了</div>'; }
+  if(window.console) console.error(err);
+}
+</script>
+</body>
+</html>

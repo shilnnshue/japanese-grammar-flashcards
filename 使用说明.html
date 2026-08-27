@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日语语法闪卡 · 完整使用说明</title>
+<style>
+  :root{ --bg:#f5f1e8; --panel:#fffdf8; --ink:#2b2b2b; --sub:#7a736a; --line:#e7e0d2; --accent:#b5432f; --accent2:#2f6f8f; --ok:#2e8b57; --bad:#c0392b; --chip:#efe9dc; }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif; line-height:1.75; font-size:16px;}
+  .wrap{max-width:840px; margin:0 auto; padding:32px 20px 80px;}
+  header{ border-bottom:3px solid var(--accent); padding-bottom:18px; margin-bottom:28px;}
+  h1{ font-size:30px; margin:0 0 6px; color:var(--accent);}
+  .sub{ color:var(--sub); font-size:15px; margin:0;}
+  h2{ font-size:22px; margin:40px 0 12px; padding-left:12px; border-left:5px solid var(--accent); color:var(--ink);}
+  h3{ font-size:17px; margin:22px 0 8px; color:var(--accent2);}
+  p,li{ color:var(--ink);}
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 22px; margin:14px 0; box-shadow:0 4px 14px rgba(0,0,0,.05);}
+  .tag{ display:inline-block; background:var(--chip); color:var(--sub); border:1px solid var(--line); border-radius:999px; padding:2px 10px; font-size:13px; margin-right:6px;}
+  .new{ background:var(--accent); color:#fff; border-color:var(--accent);}
+  .warn{ border-left:5px solid #d9a441; background:#fff8ec;}
+  .imp{ border-left:5px solid var(--accent); background:#fdf2ef;}
+  code,.kbd{ background:#f0ebe0; border:1px solid var(--line); border-radius:6px; padding:1px 7px; font-size:14px; font-family:ui-monospace,Menlo,Consolas,monospace;}
+  table{ width:100%; border-collapse:collapse; margin:12px 0; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden;}
+  th,td{ text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); font-size:15px;}
+  th{ background:var(--chip); color:var(--ink); font-weight:600;}
+  tr:last-child td{ border-bottom:none;}
+  kbd{ background:#fff; border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:1px 7px; font-size:13px; font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .url{ color:var(--accent2); word-break:break-all;}
+  ul{ padding-left:22px;}
+  li{ margin:6px 0;}
+  .foot{ margin-top:50px; padding-top:18px; border-top:1px solid var(--line); color:var(--sub); font-size:14px;}
+  @media print{ body{ background:#fff;} .card,.wrap{ box-shadow:none;} header{ border-color:var(--accent);} .noprint{ display:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>日语语法闪卡 · 完整使用说明</h1>
+    <p class="sub"> JLPT N1/N2 句型语法 368 句 · 本地真人级语音（微软 Nanami）· 支持多选筛选</p>
+  </header>
+
+  <div class="card imp">
+    <strong>一句话上手：</strong>打开页面 → 点卡片（或按 <kbd>空格</kbd>）翻面看语法点 → 点卡片听发音 → 用左侧「级别 / 分类 / 单元」下拉可<strong>同时勾多个</strong>做并集筛选。进度自动保存在本机浏览器。
+  </div>
+
+  <h2>一、怎么打开这个应用</h2>
+  <div class="card">
+    <h3>① 线上版（随时访问，推荐）</h3>
+    <p>直接用浏览器打开：<span class="url">https://shilnnshue.github.io/japanese-grammar-flashcards/</span></p>
+    <p>所有语音文件已随页面一起部署，<strong>无需下载</strong>，首次加载稍慢（约 13MB 语音）。建议用 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> 硬刷新以清掉旧缓存。</p>
+  </div>
+  <div class="card warn">
+    <h3>② 本地版（离线、最稳）</h3>
+    <p>文件夹 <code>自然语音版/</code> 里有一个 <code>日语语法闪卡.html</code> 和同级的 <code>audio/</code> 文件夹。</p>
+    <p><strong>⚠️ 关键：HTML 文件和 audio 文件夹必须放在一起打开！</strong>如果只把 HTML 单独拷走，相对路径断了，就会找不到语音文件。整文件夹一起拷贝即可离线使用。</p>
+  </div>
+
+  <h2>二、卡片怎么用</h2>
+  <div class="card">
+    <h3>正面（默认）</h3>
+    <ul>
+      <li><strong>例句日文</strong>（重要语法词已用<mark>高亮</mark>标出，方便定位句型）</li>
+      <li><strong>例句中文</strong>翻译</li>
+      <li><strong>句型 + 接続（接续）</strong>提示，如「动词·原形」</li>
+      <li>左上角徽章：<code>#编号</code> · 级别 · 单元 · 分类</li>
+    </ul>
+    <h3>反面（点卡片 / 空格翻面）</h3>
+    <ul>
+      <li><strong>语法词（日文，大字）</strong>——翻到这一面时，发音播放的是<strong>单词</strong>而非例句</li>
+      <li><strong>中文释义（小字）</strong></li>
+      <li><strong>接続</strong> 与完整句型</li>
+    </ul>
+  </div>
+
+  <h2>三、发音（真人级自然语音）</h2>
+  <div class="card">
+    <p>发音使用<strong>微软 Edge 神经语音 ja-JP-NanamiNeural</strong>（真人级女声），已离线合成好 368 句例句 + 368 个单词的 MP3。</p>
+    <ul>
+      <li><strong>点卡片</strong>：朗读当前面——正面读例句，反面读单词。</li>
+      <li><strong>按 <kbd>S</kbd></strong>：随时重新朗读当前内容。</li>
+      <li><strong>🔊 自动朗读</strong>：勾选后，翻面 / 切换卡片会自动朗读。</li>
+      <li>例句的音频在 <code>audio/001.mp3 …</code>，单词音频在 <code>audio/w/001.mp3 …</code>，按卡片编号一一对应。</li>
+    </ul>
+    <div class="card imp" style="margin-top:10px;">
+      <strong>已彻底移除机械音：</strong>本应用不再使用任何系统机械音或联网云端语音作为退路，发音<strong>只有这一套本地 Nanami 真人语音</strong>，永远不会退化成机械音。
+    </div>
+  </div>
+
+  <h2>四、筛选 <span class="tag new">本次新增：支持多选</span></h2>
+  <div class="card">
+    <p>工具栏第一组有三个下拉（点开后是复选框）：</p>
+    <ul>
+      <li><strong>级别</strong>：1级 / 2级</li>
+      <li><strong>分类</strong>：目的、原因·理由、逆接、时间、假定、例示……（共 42 类）</li>
+      <li><strong>单元</strong>：按教材单元（共 26 个）</li>
+    </ul>
+    <p><strong>现在可以同时勾选多个</strong>，表示「或」的并集关系：</p>
+    <ul>
+      <li>勾「1级」→ 只看 121 句 1级语法；</li>
+      <li>再勾「2级」→ 同时看 1级 + 2级（并集）；</li>
+      <li>分类里勾「目的」+「原因·理由」→ 同时练这两类。</li>
+    </ul>
+    <p>什么都不勾 = 不过滤（显示全部 368 句）。下拉标题会实时显示当前选择，例如「级别：1级·2级」。</p>
+    <p><strong>✕ 清空筛选</strong> 按钮：一键取消所有勾选，回到全部 368 句。</p>
+  </div>
+
+  <h2>五、模式 & 搜索</h2>
+  <div class="card">
+    <h3>模式（下拉）</h3>
+    <ul>
+      <li><strong>全部</strong>：按编号顺序</li>
+      <li><strong>复习（未掌握）</strong>：只看还没标「认识」的卡片（不认识 + 未学，适合集中复习薄弱点）</li>
+      <li><strong>仅已掌握</strong>：只看已标「认识」的（用于快速回顾）</li>
+      <li><strong>随机</strong>：打乱顺序</li>
+    </ul>
+    <p><strong>🔀 打乱顺序</strong> 按钮：对当前筛选结果立即随机重排。</p>
+    <h3>搜索</h3>
+    <p>顶部搜索框可搜<strong>句型 / 中文释义 / 例句日文 / 例句中文 / 接続</strong>或卡片编号，边输入边过滤；清空关键词即恢复。</p>
+  </div>
+
+  <h2>六、进度与掌握度（两级标记）</h2>
+  <div class="card">
+    <p>每张卡有两种状态，可随时切换：</p>
+    <ul>
+      <li>按 <kbd>K</kbd> 标记「<strong>✓ 认识</strong>」= 已掌握（彻底会了，可暂时搁置）。</li>
+      <li>按 <kbd>J</kbd> 标记「<strong>✗ 不认识</strong>」= 还没记住，需要多练。</li>
+    </ul>
+    <p>标了「认识」的卡片，正面左上角会出现绿色 <span class="tag new">✓ 已掌握</span> 徽章、卡片外圈也变绿，一眼就能区分。</p>
+    <p>顶部「完成度 %」按 <strong>认识 / 总数</strong> 计算；顶部数字分别统计 认识 / 不认识 / 未学。</p>
+    <ul>
+      <li>所有标记<strong>自动保存在本机浏览器（localStorage）</strong>，关掉网页再打开还在。</li>
+      <li><strong>↺ 重置进度</strong>：清空所有标记，重新开始。</li>
+    </ul>
+    <h3>📋 列表视图（一目查看）</h3>
+    <p>顶部「🃏 闪卡 / 📋 列表」可切换视图。列表视图把当前筛选结果列成清单，<strong>每项只显示「句型 + 意思」</strong>，并用圆点标注状态（<span style="color:var(--ok);">●</span> 认识、<span style="color:var(--bad);">●</span> 不认识、<span style="color:#c9c2b4;">●</span> 未学）。</p>
+    <ul>
+      <li>顶部 <strong>全部 / 认识 / 不认识 / 未学</strong> 四个标签可快速只看某一类。</li>
+      <li>点任意一项会跳回闪卡视图，打开那张卡的完整详情（例句 / 单词 / 释义 / 接续）。</li>
+    </ul>
+    <div class="card warn" style="margin-top:10px;">
+      <strong>注意：</strong>进度是按<strong>浏览器 + 设备</strong>保存的。换浏览器 / 换电脑 / 清缓存会丢失进度；线上版和本地版的进度<strong>不互通</strong>。
+    </div>
+  </div>
+
+  <h2>七、快捷键</h2>
+  <table>
+    <tr><th>按键</th><th>作用</th></tr>
+    <tr><td><kbd>←</kbd> / <kbd>→</kbd></td><td>上一张 / 下一张</td></tr>
+    <tr><td><kbd>空格</kbd></td><td>翻面（看语法点 / 单词）</td></tr>
+    <tr><td><kbd>S</kbd></td><td>朗读当前内容（例句或单词）</td></tr>
+    <tr><td><kbd>K</kbd></td><td>标记为「认识」（=已掌握）</td></tr>
+    <tr><td><kbd>J</kbd></td><td>标记为「不认识」</td></tr>
+  </table>
+
+  <h2>八、线上版 vs 本地版</h2>
+  <table>
+    <tr><th>对比项</th><th>线上版</th><th>本地版（自然语音版/）</th></tr>
+    <tr><td>打开方式</td><td>浏览器访问网址</td><td>双击 HTML（需 audio 同目录）</td></tr>
+    <tr><td>是否需要网络</td><td>首次加载需联网取语音</td><td>完全离线</td></tr>
+    <tr><td>语音</td><td>本地 Nanami MP3（已部署）</td><td>本地 Nanami MP3</td></tr>
+    <tr><td>进度保存</td><td>存于该浏览器</td><td>存于该浏览器</td></tr>
+  </table>
+
+  <h2>九、常见问题（FAQ）</h2>
+  <div class="card">
+    <h3>Q1：发音变成机械音 / 没声音了？</h3>
+    <p>本应用已移除机械音退路，正常只会是 Nanami 真人音。若出现没声音：① 线上版请 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> 硬刷新；② 本地版请确认 <code>audio/</code> 文件夹和 HTML 在一起；③ 浏览器可能禁用了声音，点一下卡片或页面任意处再试。</p>
+    <h3>Q2：筛选后卡片全没了？</h3>
+    <p>可能你勾了「复习（未掌握）」模式，而当前筛选下的卡片都已标「认识」——这是正常设计（已掌握的会被排除）。点「✕ 清空筛选」或切回「全部」模式即可。</p>
+    <h3>Q3：为什么勾「1级+2级」是 367 条而不是 368？</h3>
+    <p>368 句里有 1 句未标注级别，按级别筛选时它会被排除，所以 1级(121)+2级(246)=367 是正确结果。</p>
+    <h3>Q4：进度能同步 / 导出吗？</h3>
+    <p>当前进度仅存本机浏览器，不联网、不跨设备。如需换设备，请在旧设备导出书签式备份或重新标记。</p>
+  </div>
+
+  <h2>十、支持作者 / 打赏</h2>
+  <div class="card">
+    <p>做这个小工具花了不少心思。如果你觉得它对你的 N1 备考真的有用，欢迎请我喝杯咖啡 ☕。金额随意，每一份都很感激。</p>
+    <ul>
+      <li>工具栏右侧 <kbd>☕ 打赏</kbd> 按钮，弹出二维码。</li>
+      <li>支持 <strong>支付宝</strong> 与 <strong>微信支付</strong>，任选其一扫码即可。</li>
+      <li>弹出后按 <kbd>Esc</kbd> 或点空白处即可关闭。</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    <p>应用地址：<span class="url">https://shilnnshue.github.io/japanese-grammar-flashcards/</span></p>
+    <p>数据来源：《笔记本日语 1·2 级必备语法 368 句》· 例句由 AI 生成并请自行核对 · 语音为微软 Edge Nanami 神经语音离线合成。</p>
+  </div>
+</div>
+</body>
+</html>
